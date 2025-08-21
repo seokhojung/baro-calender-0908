@@ -29,7 +29,7 @@
 ## 📚 문서 구성
 
 ### **1. 체크리스트**
-- **`ui-implementation-checklist.md`**: UI 구현을 위한 40개 항목 체크리스트
+- **`ui-development-checklist.md`**: UI 개발을 위한 40개 항목 체크리스트
   - 8단계, 4주 단계별 구현 계획
   - 각 단계별 세부 작업 항목
   - 진행률 추적 및 담당자 지정

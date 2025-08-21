@@ -18,7 +18,7 @@
 
 ### UI/UX 디자인 (신규)
 - [캘린더 뷰 디자인 명세서](./ui-ux/components/calendar-view-design.md) - 첫 화면 UI/UX 상세 설계
-- [UI 구현 체크리스트](./ui-ux/checklists/ui-implementation-checklist.md) - 4주 단계별 구현 계획
+- [UI 개발 작업 체크리스트](./ui-ux/checklists/ui-development-checklist.md) - 4주 단계별 구현 계획
 - [UI/UX 문서 개요](./ui-ux/README.md) - UI/UX 문서 구조 및 가이드
 
 ### 체크리스트
@@ -58,7 +58,7 @@
 ### 프론트엔드 개발
 1. [프론트엔드 설정 가이드](./development-setup-guide.md#프론트엔드-개발-환경-설정-shadcnui--tweakcn) 확인
 2. [UI/UX 디자인 명세서](./ui-ux/components/calendar-view-design.md) 참조
-3. [UI 구현 체크리스트](./ui-ux/checklists/ui-implementation-checklist.md)로 4주 단계별 진행
+3. [UI 개발 작업 체크리스트](./ui-ux/checklists/ui-development-checklist.md)로 4주 단계별 진행
 4. [Story 2.1](./stories/2.1.basic-calendar-view.story.md) 요구사항 구현
 
 ### 🎨 **새로운 UI/UX 구현 전략**
@@ -120,7 +120,7 @@
 문서 개선이나 오류 수정을 위한 Pull Request를 환영합니다.
 
 ### **개발 참여 방법**
-1. [UI 구현 체크리스트](./ui-ux/checklists/ui-implementation-checklist.md) 확인
+1. [UI 개발 작업 체크리스트](./ui-ux/checklists/ui-development-checklist.md) 확인
 2. 담당할 단계 및 항목 선택
 3. ShadCN UI + MCP 서버 워크플로우 준수
 4. 진행 상황 체크리스트 업데이트
