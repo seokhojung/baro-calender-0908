@@ -166,3 +166,6 @@ Thumbs.db
 *.tmp
 *.temp
 *.log
+
+# AI 도구 관련 파일들
+.claude/
