@@ -54,8 +54,17 @@ services:
       - "9229:9229"  # Node.js 디버깅 포트
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgresql://postgres:postgres123@postgres:5432/baro_calendar_dev
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_NAME: baro_calendar_dev
+      DB_PASSWORD: postgres123
+      DB_PORT: 5432
       REDIS_URL: redis://redis:6379
+      JWT_SECRET: your-super-secret-jwt-key-at-least-32-characters-long
+      PORT: 8000
+      HOST: 0.0.0.0
+      CORS_ORIGIN: http://localhost:3000
+      LOG_LEVEL: info
       DEBUG: "*"
     depends_on:
       postgres:

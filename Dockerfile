@@ -1,5 +1,5 @@
 # 멀티 스테이지 빌드를 위한 베이스 이미지
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 # 작업 디렉토리 설정
 WORKDIR /app
@@ -10,13 +10,13 @@ COPY client/package*.json ./client/
 
 # 프로덕션 의존성만 설치
 FROM base AS deps
-RUN npm ci --only=production && npm cache clean --force
-RUN cd client && npm ci --only=production && npm cache clean --force
+RUN npm install --only=production && npm cache clean --force
+RUN cd client && npm install --only=production && npm cache clean --force
 
 # 개발 의존성 설치
 FROM base AS deps-dev
-RUN npm ci && npm cache clean --force
-RUN cd client && npm ci && npm cache clean --force
+RUN npm install && npm cache clean --force
+RUN cd client && npm install && npm cache clean --force
 
 # 빌드 스테이지
 FROM base AS builder
