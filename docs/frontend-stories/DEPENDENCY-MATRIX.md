@@ -2,7 +2,8 @@
 
 **Last Updated**: 2025-01-09  
 **Maintained By**: Bob (Scrum Master)  
-**Critical Path Identified**: Yes
+**Critical Path Identified**: Yes  
+**Backend Compatibility**: ✅ Verified (Events API Implemented)
 
 ---
 
@@ -44,9 +45,9 @@ graph LR
 | **1.1c** | 1.1a, 1.1b | 1.2, 1.3, 1.5, 2.11 | P0 | 5 | Sprint 2 |
 | **1.2** | 1.1a-c | 1.4, 1.6, 2.2, 2.4, 2.23 | P0 | 13 | Sprint 3 |
 | **1.3** | 1.1a-c | 1.4, Project Features | P1 | 8 | Sprint 4 |
-| **1.4** | 1.2, 1.3 | 1.5, 1.6, 2.2, 2.24 | P1 | 8 | Sprint 4 |
+| **1.4** | 1.2, 1.3, ✅Events API | 1.5, 1.6, 2.2, 2.24 | P1 | 8 | Sprint 4 |
 | **1.5** | 1.1c, 1.4, 2.11 | 2.19, Real-time Features | P0 | 13 | Sprint 6 |
-| **1.6** | 1.2, 1.4 | 2.23 | P2 | 13 | Sprint 7 |
+| **1.6** | 1.2, 1.4, ✅Events CRUD | 2.23 | P2 | 13 | Sprint 7 |
 | **1.7** | 1.1a | 2.10, 2.11, Security Features | P0 | 8 | Sprint 5 |
 | **1.8** | 1.1b | UI Theming | P1 | 5 | Sprint 2 |
 
@@ -54,7 +55,7 @@ graph LR
 
 | Story | Depends On | Blocks | Priority | Points | Can Start Sprint |
 |-------|------------|---------|----------|--------|------------------|
-| **2.2** | 1.2, 1.4 | Event Features | P0 | 5 | Sprint 5 |
+| **2.2** | 1.2, 1.4, ✅Events API | Event Features | P0 | 5 | Sprint 5 |
 | **2.3** | Merged with 1.5 | - | - | - | - |
 | **2.4** | 1.2 | 2.22 | P1 | 8 | Sprint 6 |
 | **2.5** | 2.1-2.4 | Performance Features | P1 | 5 | Sprint 7 |
@@ -63,7 +64,7 @@ graph LR
 | **2.8** | All Features | - | P1 | 3 | Sprint 9 |
 | **2.9** | 1.1a | 2.21 | P2 | 5 | Sprint 9 |
 | **2.10** | 1.7 | - | P1 | 3 | Sprint 6 |
-| **2.11** | 1.1c, 1.7 | 1.5, API Features | P0 | 8 | Sprint 5 |
+| **2.11** | 1.1c, 1.7 | 1.5, API Features | P0 | 8 | Sprint 5 | ✅REST API |
 | **2.12** | 1.1c | - | P2 | 3 | Sprint 9 |
 | **2.19** | Merged with 1.5 | - | - | - | - |
 | **2.22** | 2.4 | - | P2 | 8 | Sprint 10 |

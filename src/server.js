@@ -54,6 +54,50 @@ fastify.register(require('@fastify/swagger-ui'), {
   transformStaticCSP: (header) => header
 });
 
+// JWT 플러그인 등록
+fastify.register(require('@fastify/jwt'), {
+  secret: process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production'
+});
+
+// JWT 인증 데코레이터
+fastify.decorate("authenticate", async function(request, reply) {
+  try {
+    await request.jwtVerify();
+    
+    // 세션 확인
+    const client = await pool.connect();
+    try {
+      const sessionResult = await client.query(`
+        SELECT expires_at, is_active 
+        FROM user_sessions 
+        WHERE user_id = $1 AND jwt_token_id = $2
+      `, [request.user.user_id, request.user.jti || 'default']);
+      
+      if (sessionResult.rows.length === 0) {
+        throw new Error('Session not found');
+      }
+      
+      const session = sessionResult.rows[0];
+      if (!session.is_active || new Date(session.expires_at) < new Date()) {
+        throw new Error('Session expired');
+      }
+      
+      // 세션 최종 접근 시간 업데이트
+      await client.query(`
+        UPDATE user_sessions 
+        SET last_accessed_at = NOW() 
+        WHERE user_id = $1 AND jwt_token_id = $2
+      `, [request.user.user_id, request.user.jti || 'default']);
+      
+    } finally {
+      client.release();
+    }
+    
+  } catch (err) {
+    reply.code(401).send({ error: 'Authentication required' });
+  }
+});
+
 // CORS 설정
 fastify.register(require('@fastify/cors'), {
   origin: true,
@@ -96,6 +140,15 @@ fastify.register(require('./api/v1/timeline'), { prefix: '/v1/timeline' });
 
 // 멤버 API 라우터 등록
 fastify.register(require('./api/v1/members'), { prefix: '/v1' });
+
+// 이벤트 API 라우터 등록
+fastify.register(require('./api/v1/events'), { prefix: '/v1/events' });
+
+// 인증 API 라우터 등록
+fastify.register(require('./api/v1/auth'), { prefix: '/v1/auth' });
+
+// OAuth API 라우터 등록
+fastify.register(require('./api/v1/oauth'), { prefix: '/v1/oauth' });
 
 // 강화된 헬스체크 엔드포인트
 fastify.get('/health', async (request, reply) => {

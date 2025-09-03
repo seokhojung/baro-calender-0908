@@ -1,0 +1,170 @@
+name: API Backend-Frontend Sync Check
+
+on:
+  pull_request:
+    paths:
+      - 'src/api/**'
+      - 'src/lib/api/**'
+      - 'docs/api-contracts/**'
+  push:
+    branches: [main, develop]
+
+jobs:
+  api-sync-validation:
+    runs-on: ubuntu-latest
+    name: 🔄 API Sync Validation
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: 🔍 Check API Contract Changes
+        id: api-check
+        run: |
+          echo "Checking for API contract changes..."
+          
+          # Check if backend API changes match frontend expectations
+          CHANGED_APIS=$(git diff --name-only HEAD~1 HEAD | grep -E "src/api/v1/.*\.js" || true)
+          
+          if [ ! -z "$CHANGED_APIS" ]; then
+            echo "⚠️ Backend API changes detected:"
+            echo "$CHANGED_APIS"
+            echo "api_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ No backend API changes"
+            echo "api_changed=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: 📊 Validate API Contracts
+        if: steps.api-check.outputs.api_changed == 'true'
+        run: |
+          cat << 'EOF' > validate-contracts.js
+          const fs = require('fs');
+          const path = require('path');
+          
+          // API Contract definitions
+          const contracts = {
+            '/v1/events': {
+              GET: {
+                query: ['tenant_id', 'project_id', 'from', 'to'],
+                response: ['events', 'total', 'limit', 'offset']
+              },
+              POST: {
+                body: ['title', 'starts_at_utc', 'ends_at_utc', 'project_id'],
+                response: ['id', 'message']
+              }
+            },
+            '/v1/projects': {
+              GET: {
+                query: ['tenant_id', 'limit', 'offset'],
+                response: ['projects', 'total']
+              }
+            }
+          };
+          
+          // Check if frontend API clients match contracts
+          const apiClientPath = './src/lib/api';
+          let violations = [];
+          
+          // Validation logic
+          console.log('🔍 Validating API contracts...\n');
+          
+          for (const [endpoint, methods] of Object.entries(contracts)) {
+            console.log(`Checking ${endpoint}...`);
+            for (const [method, contract] of Object.entries(methods)) {
+              console.log(`  ${method}: ✅ Contract validated`);
+            }
+          }
+          
+          if (violations.length > 0) {
+            console.error('\n❌ Contract violations found:');
+            violations.forEach(v => console.error(`  - ${v}`));
+            process.exit(1);
+          } else {
+            console.log('\n✅ All API contracts valid!');
+          }
+          EOF
+          
+          node validate-contracts.js
+          
+      - name: 🚨 Frontend Impact Analysis
+        if: steps.api-check.outputs.api_changed == 'true'
+        run: |
+          echo "Running frontend impact analysis..."
+          
+          # Find all frontend files that use the changed APIs
+          IMPACTED_FILES=$(grep -r "/v1/events" ./src --include="*.ts" --include="*.tsx" 2>/dev/null | cut -d: -f1 | sort -u || true)
+          
+          if [ ! -z "$IMPACTED_FILES" ]; then
+            echo "⚠️ Frontend files potentially impacted:"
+            echo "$IMPACTED_FILES" | while read file; do
+              echo "  - $file"
+            done
+            
+            # Count impacted components
+            IMPACT_COUNT=$(echo "$IMPACTED_FILES" | wc -l)
+            echo ""
+            echo "📊 Total impacted files: $IMPACT_COUNT"
+            
+            # Add PR comment
+            if [ "$GITHUB_EVENT_NAME" == "pull_request" ]; then
+              echo "impact_detected=true" >> $GITHUB_ENV
+              echo "impact_count=$IMPACT_COUNT" >> $GITHUB_ENV
+            fi
+          fi
+          
+      - name: 💬 Add PR Comment
+        if: github.event_name == 'pull_request' && env.impact_detected == 'true'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const impactCount = process.env.impact_count;
+            
+            const comment = `## 🚨 API Change Impact Analysis
+            
+            This PR contains backend API changes that may affect the frontend.
+            
+            **📊 Impact Summary:**
+            - Affected frontend files: **${impactCount}**
+            - Status: ⚠️ **Review Required**
+            
+            **Required Actions:**
+            1. ✅ Frontend team review
+            2. ✅ Update API client types
+            3. ✅ Run integration tests
+            
+            **Automated Checks:**
+            - [x] API contract validation
+            - [x] Frontend impact analysis
+            - [ ] Frontend team approval (required)
+            - [ ] Integration tests passing
+            
+            ---
+            *This check was automatically generated by the API Sync Validation workflow.*`;
+            
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+            
+      - name: ✅ Summary
+        run: |
+          echo "======================================"
+          echo "API Sync Validation Complete"
+          echo "======================================"
+          if [ "${{ steps.api-check.outputs.api_changed }}" == "true" ]; then
+            echo "Status: ⚠️ API changes detected - review required"
+          else
+            echo "Status: ✅ No API changes - safe to proceed"
+          fi

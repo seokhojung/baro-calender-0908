@@ -1,10 +1,8 @@
-<<<<<<< HEAD
 // 환경 변수 로딩
 require('dotenv').config();
 
-=======
->>>>>>> 2b71f98b066ec7ed28857fc750a5e01cbb498291
 const { Pool } = require('pg');
+const SafeMigrationManager = require('../safe-migration');
 
 const pool = new Pool({
   user: process.env.DB_USER || 'postgres',
@@ -14,12 +12,8 @@ const pool = new Pool({
   port: process.env.DB_PORT || 5432,
 });
 
-<<<<<<< HEAD
 // 마이그레이션 스크립트가 기대하는 형식
 async function up() {
-=======
-async function createTables() {
->>>>>>> 2b71f98b066ec7ed28857fc750a5e01cbb498291
   const client = await pool.connect();
   
   try {
@@ -98,11 +92,43 @@ async function createTables() {
   }
 }
 
+// ⚠️ 위험한 rollback 함수를 안전한 버전으로 교체
 async function rollback() {
+  console.log('🚨 DANGEROUS OPERATION: This would DELETE ALL DATA!');
+  console.log('📋 Safe alternatives:');
+  console.log('   - Use: npm run migrate:safe-rollback 001_create_tenant_project_member_tables');
+  console.log('   - Or: npm run migrate:restore-backup [backup-file]');
+  console.log('   - Emergency: npm run migrate:emergency-rollback (requires confirmation)');
+  
+  if (process.env.ALLOW_DESTRUCTIVE_ROLLBACK !== 'true') {
+    throw new Error('Destructive rollback blocked for safety. Use safe-migration.js instead.');
+  }
+  
+  // 만약 정말로 실행해야 한다면 (개발 환경에서만)
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('BLOCKED: Cannot run destructive rollback in production!');
+  }
+  
+  console.log('⚠️ Proceeding with destructive rollback in development environment...');
+  
   const client = await pool.connect();
   
   try {
     await client.query('BEGIN');
+    
+    // 데이터가 있는지 먼저 확인
+    const memberCount = await client.query('SELECT COUNT(*) FROM members WHERE id IS NOT NULL');
+    const projectCount = await client.query('SELECT COUNT(*) FROM projects WHERE id IS NOT NULL');
+    const tenantCount = await client.query('SELECT COUNT(*) FROM tenants WHERE id IS NOT NULL');
+    
+    console.log(`📊 Data to be deleted:`);
+    console.log(`   - Members: ${memberCount.rows[0].count}`);
+    console.log(`   - Projects: ${projectCount.rows[0].count}`);
+    console.log(`   - Tenants: ${tenantCount.rows[0].count}`);
+    
+    if (memberCount.rows[0].count > 0 || projectCount.rows[0].count > 0) {
+      throw new Error('Cannot rollback: Tables contain user data! Use safe rollback instead.');
+    }
     
     await client.query('DROP TABLE IF EXISTS members CASCADE');
     await client.query('DROP TABLE IF EXISTS projects CASCADE');
@@ -125,11 +151,7 @@ if (require.main === module) {
   const command = process.argv[2];
   
   if (command === 'up') {
-<<<<<<< HEAD
     up()
-=======
-    createTables()
->>>>>>> 2b71f98b066ec7ed28857fc750a5e01cbb498291
       .then(() => process.exit(0))
       .catch(() => process.exit(1));
   } else if (command === 'down') {
@@ -142,8 +164,4 @@ if (require.main === module) {
   }
 }
 
-<<<<<<< HEAD
 module.exports = { up, rollback };
-=======
-module.exports = { createTables, rollback };
->>>>>>> 2b71f98b066ec7ed28857fc750a5e01cbb498291

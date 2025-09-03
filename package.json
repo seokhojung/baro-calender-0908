@@ -6,6 +6,7 @@
   "dependencies": {
     "@fastify/cors": "^11.1.0",
     "@fastify/jwt": "^10.0.0",
+    "@fastify/oauth2": "^8.1.0",
     "@fastify/swagger": "^9.5.1",
     "@fastify/swagger-ui": "^5.2.3",
     "bullmq": "^5.57.0",
@@ -15,9 +16,12 @@
     "jsonwebtoken": "^9.0.2",
     "next": "^15.4.6",
     "pg": "^8.16.3",
+    "qrcode": "^1.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "redis": "^5.8.1"
+    "redis": "^5.8.1",
+    "speakeasy": "^2.0.0",
+    "twilio": "^5.4.0"
   },
   "scripts": {
     "start": "node src/server.js",
@@ -45,13 +49,22 @@
     "build:client": "cd client && npm run build",
     "install:all": "npm install && cd client && npm install",
     "test": "jest",
+    "test:contracts": "jest tests/api-contracts --coverage",
     "test:watch": "jest --watch",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "db:migrate": "node src/database/run-migrations.js",
+    "migrate:safe": "node src/database/safe-migration-runner.js",
+    "migrate:dry-run": "MIGRATION_DRY_RUN=true node src/database/safe-migration-runner.js",
+    "migrate:backup": "node src/database/safe-migration-runner.js backup",
+    "migrate:safe-rollback": "node src/database/safe-migration-runner.js rollback",
+    "migrate:restore-backup": "node src/database/safe-migration-runner.js restore",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f"
+    "docker:logs": "docker-compose logs -f",
+    "prepare": "husky install || true",
+    "pre-commit": "npm run lint && npm run test:contracts",
+    "validate:api": "node scripts/validate-api-contracts.js"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
