@@ -12,14 +12,14 @@
 ### Primary Critical Path (P0 Stories) - Updated Numbering
 ```mermaid
 graph LR
-    Start([Start]) --> 1.1[1.1: Project Init<br/>5pts]
-    1.1 --> 1.2[1.2: ShadCN UI<br/>8pts]
-    1.2 --> 1.3[1.3: State Mgmt<br/>5pts]
-    1.3 --> 1.4[1.4: Calendar System<br/>13pts]
-    1.3 --> 1.9[1.9: Auth System<br/>8pts]
-    1.4 --> 1.6[1.6: Event CRUD<br/>8pts]
-    1.9 --> 2.9[2.9: REST API<br/>8pts]
-    1.6 --> 1.7[1.7: Realtime Sync<br/>13pts]
+    Start([Start]) --> 1.1[1.1: Project Init Setup<br/>5pts]
+    1.1 --> 1.2[1.2: ShadCN Design System<br/>8pts]
+    1.2 --> 1.3[1.3: State Management Monitoring<br/>5pts]
+    1.3 --> 1.4[1.4: Unified Calendar System<br/>13pts]
+    1.3 --> 1.9[1.9: Authentication Security<br/>8pts]
+    1.4 --> 1.6[1.6: Schedule CRUD Event Mgmt<br/>8pts]
+    1.9 --> 2.9[2.9: REST API Integration<br/>8pts]
+    1.6 --> 1.7[1.7: Unified Realtime Sync<br/>13pts]
     2.9 --> 1.7
     1.7 --> End([MVP Complete])
     
@@ -40,16 +40,16 @@ graph LR
 
 | Story | Depends On | Blocks | Priority | Points | Can Start Sprint |
 |-------|------------|---------|----------|--------|------------------|
-| **1.1a** | None | 1.1b, 1.1c, 1.7, All | P0 | 5 | Sprint 1 |
-| **1.1b** | 1.1a | 1.1c, 1.8, UI Stories | P0 | 8 | Sprint 1 |
-| **1.1c** | 1.1a, 1.1b | 1.2, 1.3, 1.5, 2.11 | P0 | 5 | Sprint 2 |
-| **1.2** | 1.1a-c | 1.4, 1.6, 2.2, 2.4, 2.23 | P0 | 13 | Sprint 3 |
-| **1.3** | 1.1a-c | 1.4, Project Features | P1 | 8 | Sprint 4 |
-| **1.4** | 1.2, 1.3, ✅Events API | 1.5, 1.6, 2.2, 2.24 | P1 | 8 | Sprint 4 |
-| **1.5** | 1.1c, 1.4, 2.11 | 2.19, Real-time Features | P0 | 13 | Sprint 6 |
-| **1.6** | 1.2, 1.4, ✅Events CRUD | 2.23 | P2 | 13 | Sprint 7 |
-| **1.7** | 1.1a | 2.10, 2.11, Security Features | P0 | 8 | Sprint 5 |
-| **1.8** | 1.1b | UI Theming | P1 | 5 | Sprint 2 |
+| **1.1** | None | 1.2, 1.3, 1.9, All UI | P0 | 5 | Sprint 1 |
+| **1.2** | 1.1 | 1.4, 1.6, 2.1, 2.2, 2.4 | P0 | 8 | Sprint 1 |
+| **1.3** | 1.1 | 1.4, 1.5, Project Features | P0 | 5 | Sprint 2 |
+| **1.4** | 1.2, 1.3, ✅Events API | 1.6, 1.8, 2.1 | P0 | 13 | Sprint 3 |
+| **1.5** | 1.3, ✅Projects API | Project Features | P1 | 8 | Sprint 4 |
+| **1.6** | 1.4, ✅Events CRUD | 1.8, 2.23 | P1 | 8 | Sprint 4 |
+| **1.7** | 1.1, 2.9 | Real-time Features | P0 | 13 | Sprint 6 |
+| **1.8** | 1.6, 1.4 | 2.23 | P2 | 13 | Sprint 7 |
+| **1.9** | 1.1 | 2.8, 2.9, Security Features | P0 | 8 | Sprint 5 |
+| **1.10** | 1.2 | UI Theming | P1 | 5 | Sprint 2 |
 
 ### Epic 2 Dependencies
 
