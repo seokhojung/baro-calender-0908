@@ -66,14 +66,14 @@
 | 2.7 | 테스트 전략 | 5 | P1 | [Core] | 📝 Needs Points |
 | 2.8 | 에러 핸들링 | 3 | P1 | [All] | 📝 Needs Points |
 | 2.9 | CI/CD 파이프라인 | 5 | P2 | [1.1a] | 📝 Needs Points |
-| 2.10 | 보안 모범 사례 | 3 | P1 | [1.7] | 📝 Needs Points |
+| 2.8 | 보안 모범 사례 | 3 | P1 | [1.7] | 📝 Needs Points |
 
 ### Sprint 9-10: Advanced Features
 | Story ID | Title | Points | Priority | Dependencies | Status |
 |----------|-------|--------|----------|--------------|--------|
-| 2.11 | GraphQL API 통합 | 8 | P0 | [1.1c] | 📝 Needs Points |
+| 2.9 | REST API 통합 (원래 GraphQL) | 8 | P0 | [1.1c] | 📝 Needs Points |
 | 2.12 | 관측성 모니터링 | 3 | P2 | [1.1c] | 📝 Needs Points |
-| 2.19 | WebSocket 실시간 동기화 | 5 | P1 | [2.3] | 📝 Needs Points |
+| 2.3 | 실시간 동기화 (2.19 WebSocket 통합) | 8 | P1 | [1.5] | 📝 Needs Merging |
 | 2.22 | 오프라인 지원 PWA | 8 | P2 | [2.4] | 📝 Needs Points |
 | 2.24 | 파일 첨부 시스템 | 5 | P2 | [1.4] | 📝 Needs Points |
 
