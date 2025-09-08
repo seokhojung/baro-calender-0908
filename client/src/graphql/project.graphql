@@ -1,0 +1,208 @@
+# Project GraphQL Schema and Queries
+
+query GetProjects($filters: ProjectFilters) {
+  projects(filters: $filters) {
+    id
+    name
+    description
+    color
+    isActive
+    members {
+      userId
+      role
+      permissions
+      joinedAt
+    }
+    permissions {
+      canRead
+      canWrite
+      canDelete
+      canManageMembers
+    }
+    createdAt
+    updatedAt
+    order
+  }
+}
+
+query GetProject($id: ID!) {
+  project(id: $id) {
+    id
+    name
+    description
+    color
+    isActive
+    members {
+      userId
+      role
+      permissions
+      joinedAt
+    }
+    permissions {
+      canRead
+      canWrite
+      canDelete
+      canManageMembers
+    }
+    createdAt
+    updatedAt
+    order
+  }
+}
+
+mutation CreateProject($input: CreateProjectInput!) {
+  createProject(input: $input) {
+    id
+    name
+    description
+    color
+    isActive
+    order
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdateProject($id: ID!, $input: UpdateProjectInput!) {
+  updateProject(id: $id, input: $input) {
+    id
+    name
+    description
+    color
+    isActive
+    order
+    updatedAt
+  }
+}
+
+mutation DeleteProject($id: ID!) {
+  deleteProject(id: $id) {
+    success
+    message
+  }
+}
+
+mutation ReorderProjects($updates: [ProjectOrderUpdate!]!) {
+  reorderProjects(updates: $updates) {
+    success
+    projects {
+      id
+      order
+    }
+  }
+}
+
+mutation AddProjectMember($projectId: ID!, $input: AddMemberInput!) {
+  addProjectMember(projectId: $projectId, input: $input) {
+    userId
+    role
+    permissions
+    joinedAt
+  }
+}
+
+mutation UpdateProjectMember($projectId: ID!, $userId: ID!, $input: UpdateMemberInput!) {
+  updateProjectMember(projectId: $projectId, userId: $userId, input: $input) {
+    userId
+    role
+    permissions
+  }
+}
+
+mutation RemoveProjectMember($projectId: ID!, $userId: ID!) {
+  removeProjectMember(projectId: $projectId, userId: $userId) {
+    success
+    message
+  }
+}
+
+subscription ProjectUpdates {
+  projectUpdated {
+    id
+    type
+    project {
+      id
+      name
+      description
+      color
+      isActive
+      order
+      updatedAt
+    }
+    timestamp
+  }
+}
+
+# Input Types
+input ProjectFilters {
+  isActive: Boolean
+  colors: [ProjectColor!]
+  memberId: String
+}
+
+input CreateProjectInput {
+  name: String!
+  description: String
+  color: ProjectColor!
+  isActive: Boolean = true
+}
+
+input UpdateProjectInput {
+  name: String
+  description: String
+  color: ProjectColor
+  isActive: Boolean
+  order: Int
+}
+
+input ProjectOrderUpdate {
+  id: ID!
+  order: Int!
+}
+
+input AddMemberInput {
+  userId: ID!
+  role: ProjectRole!
+  permissions: [ProjectPermission!]!
+}
+
+input UpdateMemberInput {
+  role: ProjectRole
+  permissions: [ProjectPermission!]
+}
+
+# Enums
+enum ProjectColor {
+  RED
+  ORANGE
+  AMBER
+  YELLOW
+  LIME
+  GREEN
+  BLUE
+  PURPLE
+}
+
+enum ProjectRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum ProjectPermission {
+  PROJECT_READ
+  PROJECT_WRITE
+  PROJECT_DELETE
+  PROJECT_MANAGE_MEMBERS
+  EVENT_READ
+  EVENT_WRITE
+  EVENT_DELETE
+}
+
+enum ProjectUpdateType {
+  CREATED
+  UPDATED
+  DELETED
+  REORDERED
+}

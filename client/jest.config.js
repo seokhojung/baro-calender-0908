@@ -13,6 +13,17 @@ const customJestConfig = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+  // Fix for react-dnd ESM modules
+  transformIgnorePatterns: [
+    'node_modules/(?!(react-dnd|react-dnd-html5-backend|dnd-core)/)',
+  ],
+  // Handle ESM modules  
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  globals: {
+    'ts-jest': {
+      useESM: true,
+    },
+  },
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',

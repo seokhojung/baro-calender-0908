@@ -62,10 +62,10 @@ graph LR
 | **2.6** | All UI | - | P1 | 3 | Sprint 8 |
 | **2.7** | Core Features | - | P1 | 5 | Sprint 8 |
 | **2.8** | All Features | - | P1 | 3 | Sprint 9 |
-| **2.9** | 1.1a | 2.21 | P2 | 5 | Sprint 9 |
+| **2.9** | 1.1 | 2.21 | P2 | 5 | Sprint 9 |
 | **2.10** | 1.7 | - | P1 | 3 | Sprint 6 |
-| **2.11** | 1.1c, 1.7 | 1.5, API Features | P0 | 8 | Sprint 5 | ✅REST API |
-| **2.12** | 1.1c | - | P2 | 3 | Sprint 9 |
+| **2.11** | 1.3, 1.7 | 1.5, API Features | P0 | 8 | Sprint 5 | ✅REST API |
+| **2.12** | 1.3 | - | P2 | 3 | Sprint 9 |
 | **2.19** | Merged with 1.5 | - | - | - | - |
 | **2.22** | 2.4 | - | P2 | 8 | Sprint 10 |
 | **2.23** | 1.6 | - | P2 | 5 | Sprint 8 |
@@ -78,28 +78,28 @@ graph LR
 
 ### Chain 1: Core Infrastructure
 ```
-1.1a → 1.1b → 1.1c → [All Features]
+1.1 → 1.2 → 1.3 → [All Features]
 ```
 
 ### Chain 2: Calendar Features
 ```
-1.1c → 1.2 → 1.4 → 1.5 (Realtime)
-         ↓      ↓
-        2.4    1.6 (Recurring)
-         ↓      ↓
-        2.22   2.23
+1.3 → 1.2 → 1.4 → 1.5 (Realtime)
+        ↓      ↓
+       2.4    1.6 (Recurring)
+        ↓      ↓
+       2.22   2.23
 ```
 
 ### Chain 3: Authentication & API
 ```
-1.1a → 1.7 → 2.11 → 1.5 (Realtime)
-         ↓      ↓
-        2.10   API Features
+1.1 → 1.7 → 2.11 → 1.5 (Realtime)
+        ↓      ↓
+       2.10   API Features
 ```
 
 ### Chain 4: Project Management
 ```
-1.1c → 1.3 → 1.4 → Project Features
+1.3 → 1.5 → 1.4 → Project Features
 ```
 
 ---
@@ -107,10 +107,10 @@ graph LR
 ## 🚨 Blocking Dependencies
 
 ### Critical Blockers (Must Complete First)
-1. **1.1a** - Blocks everything
-2. **1.1b** - Blocks all UI development
-3. **1.1c** - Blocks state management features
-4. **1.2** - Blocks calendar-related features
+1. **1.1** - Blocks everything
+2. **1.2** - Blocks all UI development
+3. **1.3** - Blocks state management features
+4. **1.4** - Blocks calendar-related features
 5. **1.7** - Blocks security and API features
 
 ### High Impact Dependencies
@@ -123,85 +123,85 @@ graph LR
 ## 📈 Parallel Work Opportunities
 
 ### Sprint 1-2: Foundation
-- Team A: 1.1a → 1.1b
-- Team B: (Wait for 1.1a) → 1.1c
+- Team A: 1.1 → 1.2
+- Team B: (Wait for 1.1) → 1.3
 
 ### Sprint 3-4: Core Features
-- Team A: 1.2 (Calendar)
-- Team B: 1.8 (Design System)
+- Team A: 1.4 (Calendar)
+- Team B: 1.10 (Design System)
 
 ### Sprint 4-5: Management Systems
-- Team A: 1.3 (Projects)
-- Team B: 1.4 (Events)
-- Team C: 1.7 (Auth)
+- Team A: 1.5 (Projects)
+- Team B: 1.6 (Events)
+- Team C: 1.9 (Auth)
 
 ### Sprint 5-6: Integration
-- Team A: 2.11 (GraphQL)
-- Team B: 2.2 (Event Management)
-- Team C: 2.10 (Security)
+- Team A: 2.9 (REST API)
+- Team B: 2.1 (Event Management)
+- Team C: 2.8 (Security)
 
 ### Sprint 6-7: Advanced Features
-- Team A: 1.5 (Realtime - after 2.11)
-- Team B: 2.4 (Mobile PWA)
-- Team C: 1.6 (Recurring)
+- Team A: 1.7 (Realtime - after 2.9)
+- Team B: 2.2 (Mobile PWA)
+- Team C: 1.8 (Recurring)
 
 ---
 
 ## ⚠️ Risk Areas
 
 ### High Risk Dependencies
-1. **1.5 (Realtime)** - Depends on 3 critical stories
-2. **1.6 (Recurring)** - Complex, depends on calendar core
-3. **2.11 (GraphQL)** - Blocks realtime features
+1. **1.7 (Realtime)** - Depends on 3 critical stories
+2. **1.8 (Recurring)** - Complex, depends on calendar core
+3. **2.9 (REST API)** - Blocks realtime features
 
 ### Mitigation Strategies
-1. **Start 1.7 and 2.11 early** - They block realtime
-2. **Prototype 1.5 early** - Identify technical challenges
-3. **Stub APIs for 2.11** - Allow parallel development
+1. **Start 1.9 and 2.9 early** - They block realtime
+2. **Prototype 1.7 early** - Identify technical challenges
+3. **Stub APIs for 2.9** - Allow parallel development
 
 ---
 
 ## 📋 Sprint Loading (Based on Dependencies)
 
 ### Sprint 1 (13 points)
-- 1.1a: Project Init (5)
-- 1.1b: ShadCN UI - Start (8)
+- 1.1: Project Init (5)
+- 1.2: ShadCN UI - Start (8)
 
 ### Sprint 2 (10 points)
-- 1.1b: ShadCN UI - Complete
-- 1.1c: State Management (5)
-- 1.8: Design System (5)
+- 1.2: ShadCN UI - Complete
+- 1.3: State Management (5)
+- 1.10: Design System (5)
 
 ### Sprint 3 (13 points)
-- 1.2: Calendar System (13)
+- 1.4: Calendar System (13)
 
 ### Sprint 4 (16 points)
-- 1.3: Project CRUD (8)
-- 1.4: Event CRUD (8)
+- 1.5: Project CRUD (8)
+- 1.6: Event CRUD (8)
 
 ### Sprint 5 (21 points)
-- 1.7: Auth System (8)
-- 2.11: GraphQL (8)
-- 2.2: Event Management (5)
+- 1.9: Auth System (8)
+- 2.9: REST API (8)
+- 2.1: Event Management (5)
 
 ### Sprint 6 (14 points)
-- Start 1.5: Realtime (13) - Partial
-- 2.10: Security (3)
+- Start 1.7: Realtime (13) - Partial
+- 2.8: Security (3)
 
 ### Sprint 7 (16 points)
-- Complete 1.5: Realtime
-- 2.4: Mobile PWA (8)
-- 2.5: Performance (5)
+- Complete 1.7: Realtime
+- 2.2: Mobile PWA (8)
+- 2.3: Performance (5)
 
 ### Sprint 8 (21 points)
-- 1.6: Recurring (13)
-- 2.6: Accessibility (3)
+- 1.8: Recurring (13)
+- 2.4: Accessibility (3)
 - 2.23: Recurring UI (5)
 
 ### Sprint 9 (16 points)
-- 2.7: Testing (5)
-- 2.8: Error Handling (3)
-- 2.9: CI/CD (5)
+- 2.5: Testing (5)
+- 2.6: Error Handling (3)
+- 2.7: CI/CD (5)
 - 2.12: Monitoring (3)
 
 ### Sprint 10 (21 points)
@@ -215,18 +215,18 @@ graph LR
 
 ### Immediate Actions
 1. ✅ Validate dependencies with tech leads
-2. ✅ Confirm 1.1a can start immediately
+2. ✅ Confirm 1.1 can start immediately
 3. ✅ Assign teams to parallel tracks
 
 ### Resource Allocation
-- **Critical Path Team**: Focus on 1.1a → 1.1c → 1.2 → 1.5
-- **Auth/API Team**: 1.7 → 2.11 (parallel track)
-- **UI/UX Team**: 1.1b → 1.8 → UI features
+- **Critical Path Team**: Focus on 1.1 → 1.3 → 1.4 → 1.7
+- **Auth/API Team**: 1.9 → 2.9 (parallel track)
+- **UI/UX Team**: 1.2 → 1.10 → UI features
 
 ### Watch Points
 - Sprint 5-6: Heavy load, consider splitting
-- 1.5 (Realtime): High complexity, allocate senior devs
-- 1.6 (Recurring): Consider MVP version first
+- 1.7 (Realtime): High complexity, allocate senior devs
+- 1.8 (Recurring): Consider MVP version first
 
 ---
 

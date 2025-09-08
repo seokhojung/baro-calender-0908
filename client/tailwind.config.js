@@ -253,7 +253,149 @@ module.exports = {
         'token-2xl': 'var(--shadow-2xl)',
         'token-inner': 'var(--shadow-inner)',
       },
+
+      // === Responsive Breakpoints ===
+      screens: {
+        'xs': '375px',     // Mobile (small)
+        'sm': '640px',     // Mobile (large)
+        'md': '768px',     // Tablet (portrait)
+        'lg': '1024px',    // Tablet (landscape) / Desktop (small)
+        'xl': '1280px',    // Desktop (medium)
+        '2xl': '1536px',   // Desktop (large)
+        '3xl': '1920px',   // Desktop (extra large)
+        // Touch-specific breakpoints
+        'touch': { 'raw': '(pointer: coarse)' },
+        'no-touch': { 'raw': '(pointer: fine)' },
+        // Orientation breakpoints
+        'portrait': { 'raw': '(orientation: portrait)' },
+        'landscape': { 'raw': '(orientation: landscape)' },
+        // Accessibility breakpoints
+        'reduced-motion': { 'raw': '(prefers-reduced-motion: reduce)' },
+        'high-contrast': { 'raw': '(prefers-contrast: high)' },
+      },
+
+      // === Animation & Transitions ===
+      transitionProperty: {
+        'touch': 'transform, opacity, background-color',
+        'focus': 'outline, box-shadow, background-color',
+      },
+      transitionDuration: {
+        '150': '150ms',
+        '200': '200ms',
+        '250': '250ms',
+        '400': '400ms',
+      },
+
+      // === Mobile-specific utilities ===
+      minHeight: {
+        'touch': '44px',        // Minimum touch target size
+        'touch-lg': '56px',     // Large touch target
+        'screen-safe': '100dvh', // Dynamic viewport height
+      },
+      minWidth: {
+        'touch': '44px',        // Minimum touch target size
+        'touch-lg': '56px',     // Large touch target
+      },
+
+      // === Accessibility utilities ===
+      outline: {
+        'focus': '2px solid hsl(var(--ring))',
+        'focus-visible': '2px solid hsl(var(--ring))',
+      },
+      outlineOffset: {
+        'focus': '2px',
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    // Touch utilities plugin
+    function({ addUtilities }) {
+      addUtilities({
+        '.touch-manipulation': {
+          'touch-action': 'manipulation',
+        },
+        '.touch-pan-x': {
+          'touch-action': 'pan-x',
+        },
+        '.touch-pan-y': {
+          'touch-action': 'pan-y',
+        },
+        '.touch-pinch-zoom': {
+          'touch-action': 'pinch-zoom',
+        },
+        '.touch-none': {
+          'touch-action': 'none',
+        },
+        '.scroll-smooth-mobile': {
+          '@media (pointer: coarse)': {
+            'scroll-behavior': 'smooth',
+            '-webkit-overflow-scrolling': 'touch',
+          },
+        },
+        '.tap-highlight-transparent': {
+          '-webkit-tap-highlight-color': 'transparent',
+        },
+        '.safe-area-inset': {
+          'padding-top': 'env(safe-area-inset-top)',
+          'padding-bottom': 'env(safe-area-inset-bottom)',
+          'padding-left': 'env(safe-area-inset-left)',
+          'padding-right': 'env(safe-area-inset-right)',
+        },
+        '.safe-area-inset-top': {
+          'padding-top': 'env(safe-area-inset-top)',
+        },
+        '.safe-area-inset-bottom': {
+          'padding-bottom': 'env(safe-area-inset-bottom)',
+        },
+      })
+    },
+    // Accessibility utilities plugin
+    function({ addUtilities }) {
+      addUtilities({
+        '.sr-only': {
+          'position': 'absolute',
+          'width': '1px',
+          'height': '1px',
+          'padding': '0',
+          'margin': '-1px',
+          'overflow': 'hidden',
+          'clip': 'rect(0, 0, 0, 0)',
+          'white-space': 'nowrap',
+          'border': '0',
+        },
+        '.sr-only-focusable:focus': {
+          'position': 'static',
+          'width': 'auto',
+          'height': 'auto',
+          'padding': 'initial',
+          'margin': 'initial',
+          'overflow': 'visible',
+          'clip': 'auto',
+          'white-space': 'normal',
+        },
+        '.focus-visible-only': {
+          'outline': 'none',
+          '&:focus-visible': {
+            'outline': '2px solid hsl(var(--ring))',
+            'outline-offset': '2px',
+          },
+        },
+        '.skip-link': {
+          'position': 'absolute',
+          'top': '-40px',
+          'left': '6px',
+          'background': 'hsl(var(--background))',
+          'color': 'hsl(var(--foreground))',
+          'padding': '8px',
+          'border-radius': '4px',
+          'text-decoration': 'none',
+          'z-index': '1000',
+          'transition': 'top 0.3s',
+          '&:focus': {
+            'top': '6px',
+          },
+        },
+      })
+    }
+  ],
 }
