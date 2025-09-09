@@ -219,7 +219,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
               <Settings className="h-4 w-4" />
             </Button>
           </div>
-        </header>
+        </div>
 
         {/* Loading indicator */}
         {store.isLoading && (

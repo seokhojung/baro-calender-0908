@@ -22,7 +22,7 @@ export interface ChunkedRenderingState<T> {
 /**
  * Hook for chunked rendering of large datasets to prevent UI blocking
  */
-export const useChunkedRendering = <T>(
+export const useChunkedRendering = <T extends any>(
   items: T[],
   options: Partial<ChunkedRenderingOptions> = {}
 ) => {
@@ -240,7 +240,7 @@ export const useChunkedProcessor = <T, R>(
 /**
  * Hook for progressive loading with intersection observer
  */
-export const useProgressiveLoading = <T>(
+export const useProgressiveLoading = <T extends any>(
   allItems: T[],
   options: {
     initialCount: number;
