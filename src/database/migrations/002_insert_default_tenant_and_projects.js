@@ -35,8 +35,7 @@ async function insertDefaultTenant() {
           start: '09:00',
           end: '18:00'
         }
-      },
-<<<<<<< HEAD
+      }
     };
 
     const result = await client.query(`
@@ -45,29 +44,12 @@ async function insertDefaultTenant() {
       ON CONFLICT (domain) DO UPDATE SET
         name = EXCLUDED.name,
         settings = EXCLUDED.settings,
-=======
-      status: 'active'
-    };
-
-    const result = await client.query(`
-      INSERT INTO tenants (name, domain, settings, status, created_at, updated_at)
-      VALUES ($1, $2, $3, $4, NOW(), NOW())
-      ON CONFLICT (domain) DO UPDATE SET
-        name = EXCLUDED.name,
-        settings = EXCLUDED.settings,
-        status = EXCLUDED.status,
->>>>>>> 2b71f98b066ec7ed28857fc750a5e01cbb498291
         updated_at = NOW()
       RETURNING id, name, domain
     `, [
       defaultTenant.name,
       defaultTenant.domain,
-<<<<<<< HEAD
       JSON.stringify(defaultTenant.settings)
-=======
-      JSON.stringify(defaultTenant.settings),
-      defaultTenant.status
->>>>>>> 2b71f98b066ec7ed28857fc750a5e01cbb498291
     ]);
 
     console.log('✅ 기본 테넌트 생성 완료:', result.rows[0]);

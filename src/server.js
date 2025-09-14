@@ -54,10 +54,6 @@ fastify.register(require('@fastify/swagger-ui'), {
   transformStaticCSP: (header) => header
 });
 
-// JWT 플러그인 등록
-fastify.register(require('@fastify/jwt'), {
-  secret: process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production'
-});
 
 // JWT 인증 데코레이터
 fastify.decorate("authenticate", async function(request, reply) {

@@ -3,12 +3,8 @@
  * 모든 마이그레이션을 순서대로 실행
  */
 
-<<<<<<< HEAD
 // 환경 변수 로딩
 require('dotenv').config();
-
-=======
->>>>>>> 2b71f98b066ec7ed28857fc750a5e01cbb498291
 const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');

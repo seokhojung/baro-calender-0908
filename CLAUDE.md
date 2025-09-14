@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-이 파일은 이 저장소에서 작업할 때 Claude Code (claude.ai/code)에 대한 지침을 제공합니다.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## 프로젝트 개요
 
@@ -37,7 +37,10 @@ npm run dev:full       # 두 서버 동시 실행
 
 # 데이터베이스
 npm run db:migrate     # 데이터베이스 마이그레이션 실행
+node src/database/run-migrations.js run    # 마이그레이션 직접 실행
+node src/database/run-migrations.js status # 마이그레이션 상태 확인
 npm run docker:up      # Docker로 PostgreSQL & Redis 시작
+docker-compose up -d postgres redis  # DB만 시작 (앱 제외)
 ```
 
 ### 테스트 & 품질
@@ -57,6 +60,10 @@ cd client && npm run type-check  # TypeScript 타입 체크
 ```bash
 npm run build          # 프론트엔드 프로덕션 빌드
 npm start              # 프로덕션 서버 시작
+
+# API 계약 테스트
+npm run test:contracts # API 엔드포인트 계약 테스트
+npm run validate:api   # API 스키마 검증
 ```
 
 ## 아키텍처
@@ -77,19 +84,32 @@ npm start              # 프로덕션 서버 시작
 - `client/src/stores/` - Zustand 상태 스토어
 - `client/src/types/` - TypeScript 타입 정의
 
-### API 설계
-- `/api/v1/` 하위의 RESTful 엔드포인트
-- 24시간 만료 JWT 기반 인증
-- ACL 기반 권한 부여 (Owner, Editor, Commenter, Viewer 역할)
-- `/docs`에서 Swagger 문서 제공
+### API 설계 & 인증 시스템
+- `/api/v1/` 하위의 RESTful 엔드포인트 (auth, projects, members, events, timeline, oauth)
+- **Multi-tenant Architecture**: 모든 데이터는 `tenant_id`로 격리됨
+- **JWT Authentication**: 24시간 만료, 세션 DB 저장으로 토큰 무효화 지원
+- **ACL 권한 계층**: Owner → Editor → Commenter → Viewer (계층적 권한 상속)
+- **Security Features**: 세션 추적, 토큰 블랙리스팅, 활성 세션 관리
+- Swagger 문서: `http://localhost:8000/docs`
 
-### 데이터베이스 스키마
-- Projects 테이블 - 핵심 프로젝트 엔티티
-- Schedules 테이블 - 개별 일정 항목
-- Users 테이블 - 사용자 계정 및 프로필  
-- ProjectMembers 테이블 - 프로젝트 접근 제어
-- RecurringPatterns 테이블 - 반복 일정 규칙
-- Notifications 테이블 - 인앱 알림
+### 데이터베이스 스키마 & 관계
+```sql
+-- Multi-tenant 구조
+tenants (id, name, domain, settings)
+  ↓ 1:N
+projects (id, tenant_id, owner_id, name, color, settings)
+  ↓ 1:N
+members (id, tenant_id, project_id, user_id, role, invited_at, accepted_at)
+
+-- 사용자 & 세션 관리
+users (id, email, password_hash, first_name, last_name, role, tenant_id)
+user_sessions (user_id, jwt_token_id, expires_at, is_active, last_accessed_at)
+
+-- 이벤트 & 스케줄
+events (id, project_id, title, start_date, end_date, all_day, location)
+recurring_patterns (id, event_id, rrule, timezone)
+notifications (id, user_id, event_id, type, message, read_at)
+```
 
 ## 현재 개발 중점 사항
 
@@ -100,21 +120,49 @@ npm start              # 프로덕션 서버 시작
 - 성능 최적화 (가상 스크롤링, 지연 로딩)
 - 모바일 터치 인터페이스 최적화
 
-## 중요한 패턴
+## 중요한 아키텍처 패턴
 
-### API 통합
-- 프론트엔드에서 GraphQL 쿼리를 위해 Apollo Client 사용
-- 백엔드는 GraphQL이 아닌 RESTful API 제공 (Apollo Client 사용에도 불구하고)
-- API 베이스 URL: `http://localhost:8000/api/v1`
+### Authentication & Authorization Flow
+```typescript
+// JWT + Session 하이브리드 전략
+1. JWT 토큰 발급 (24시간) → sessionStorage 저장
+2. 세션 DB 저장 (토큰 무효화 지원)
+3. ACL 미들웨어로 경로별 권한 검증
+4. 자동 토큰 갱신 (만료 10분 전)
+```
 
-### 상태 관리
-- Zustand 스토어의 전역 앱 상태
-- React 훅을 사용한 로컬 컴포넌트 상태
-- Apollo Client로 캐시된 서버 상태
+### API 통합 패턴
+- **Backend**: Fastify RESTful APIs (`/api/v1/*`)
+- **Frontend**: Apollo Client configured for REST (not GraphQL)
+- **Base URL**: `http://localhost:8000/api/v1`
+- **Error Handling**: Centralized with toast notifications
 
-### 에러 처리
-- 백엔드: 적절한 HTTP 상태 코드를 가진 Fastify 에러 핸들러
-- 프론트엔드: 토스트 알림을 통한 사용자 친화적 에러 메시지와 Try-catch 블록
+### Frontend State Architecture
+```typescript
+// Zustand Store 구조 (client/src/stores/)
+useStores() = {
+  calendar: useCalendarStore(),    // 캘린더 뷰 상태
+  project: useProjectStore(),      // 프로젝트 관리 상태
+  user: useUserStore(),           // 사용자 프로필 & 설정
+  ui: useUIStore()                // UI 상태 & 알림
+}
+// + React Context for theme/auth + Apollo Client cache
+```
+
+### Component Architecture Patterns
+- **Atomic Design**: `ui/` → `calendar/` → `layout/` hierarchy
+- **Performance First**: Virtual scrolling, memoization, lazy loading
+- **ShadCN Integration**: Design token system with 8-color palette
+- **Mobile Optimized**: Touch interfaces with safe-area support
+
+### Key Middleware & Security
+```typescript
+// ACL 권한 시스템 (src/middleware/acl.js)
+authenticateUser()          // JWT 검증
+requireProjectMembership()  // 프로젝트 접근 권한
+requireOwner()             // 소유자 전용 작업
+requireEditorOrHigher()    // 편집자 이상 권한
+```
 
 ### 성능 요구사항
 - 뷰 전환: < 150ms
@@ -132,11 +180,21 @@ npm start              # 프로덕션 서버 시작
 
 3. 개발 시작 전에 데이터베이스 마이그레이션 실행
 
-## 알아야 할 주요 파일
+## 핵심 설정 파일
 
-- `package.json` - 백엔드 의존성 및 스크립트
-- `client/package.json` - 프론트엔드 의존성 및 스크립트  
-- `client/tailwind.config.js` - 디자인 토큰 설정
-- `src/server.js` - 백엔드 진입점
-- `client/src/app/page.tsx` - 프론트엔드 홈 페이지
-- `docs/architecture/` - 시스템 설계 문서
+### Backend Configuration
+- `src/server.js` - Fastify 서버 진입점 & 플러그인 설정
+- `src/middleware/acl.js` - 인증 & 권한 미들웨어 시스템
+- `src/database/run-migrations.js` - DB 마이그레이션 실행기
+- `src/utils/envValidator.js` - 환경 변수 검증 시스템
+
+### Frontend Configuration
+- `client/src/lib/auth/tokenManager.ts` - JWT 토큰 관리 (하이브리드 전략)
+- `client/src/stores/` - Zustand 상태 관리 스토어들
+- `client/tailwind.config.js` - 디자인 토큰 & 8색상 팔레트
+- `client/src/app/layout.tsx` - 루트 레이아웃 & 테마 프로바이더
+
+### Environment & Docker
+- `.env` (from `env.example`) - 환경 설정
+- `docker-compose.yml` - 프로덕션 Docker 설정
+- `docker-compose.dev.yml` - 개발용 Docker 설정
