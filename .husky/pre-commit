@@ -113,3 +113,11 @@ echo "======================================"
 
 # Run existing pre-commit hooks if any
 npm run lint 2>/dev/null || true
+
+# Living Documentation 동기화
+echo "6️⃣ Living Documentation 동기화..."
+if [ -f "docs/implementation-verification/automation-tools/pre-commit-doc-sync.js" ]; then
+  node docs/implementation-verification/automation-tools/pre-commit-doc-sync.js
+else
+  echo "⚠️ Living Documentation 스크립트를 찾을 수 없습니다."
+fi
