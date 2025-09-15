@@ -24,7 +24,7 @@ import {
   Clock,
   Database,
   Gauge,
-  Memory,
+  MemoryStick as Memory,
   Zap,
   TrendingUp,
   CheckCircle2,

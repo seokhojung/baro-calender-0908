@@ -16,7 +16,7 @@ import {
   Monitor, 
   Accessibility, 
   Keyboard, 
-  TouchIcon as Touch, 
+  Hand as Touch, 
   Zap,
   Info
 } from 'lucide-react';

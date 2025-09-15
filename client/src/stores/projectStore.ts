@@ -600,6 +600,6 @@ export const useProjectRealtime = () => {
 };
 
 // Named exports for convenient importing
-export { useProjectStore, useProjectSelectors };
+export { useProjectStore };
 
 export default useProjectStore;

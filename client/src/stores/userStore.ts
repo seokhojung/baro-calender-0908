@@ -323,6 +323,6 @@ export const useUserSelectors = () => {
 };
 
 // Named exports for convenient importing  
-export { useUserStore, useUserSelectors };
+export { useUserStore };
 
 export default useUserStore;

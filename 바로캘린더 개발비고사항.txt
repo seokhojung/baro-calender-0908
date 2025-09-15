@@ -125,6 +125,77 @@ living-documentation-system
 자동화 도구도 만들었다고 하니 정독요함.
 
 
+automation-quickstart-guide.md
+자동화 도구 설명 가이드임.
 
 
 
+
+
+******9/15 월 9월 15일 9.15 ********
+
+
+
+
+
+## 📝 **커밋 로그 스타일 이슈 정리**
+
+### 🐛 **Fix: Docker 환경 충돌 및 포트 설정 문제 해결**
+
+#### **문제 상황:**
+- PC 환경 변경 후 도커 실행 시 네트워크 IP 충돌 발생
+- 포트 매핑 불일치로 프론트엔드 접속 불가
+- 기존 프로젝트 잔여물로 인한 컨테이너 이름 중복
+
+#### **에러 메시지:**
+```
+Error: Pool overlaps with other one on this address space
+Error: Container name is already in use
+Error: listen EADDRINUSE: address already in use :::3000
+```
+
+#### **해결 내용:**
+```bash
+# 도커 환경 정리
+docker system prune -f  # 12.37GB 캐시 정리
+
+# 포트 매핑 수정
+- ports: "3000:3000" → "8000:8000"  # 백엔드를 올바른 포트로
+
+# 네트워크 설정 변경
+- subnet: 172.21.0.0/16 → 172.22.0.0/16  # IP 충돌 해결
+```
+
+#### **결과:**
+- ✅ 백엔드: `http://localhost:8000` (정상 작동)
+- ✅ 프론트엔드: `http://localhost:3000` (정상 작동)
+
+### 📚 **Docs: PC-SETUP.md 업데이트**
+
+#### **추가된 섹션:**
+- `⚠️ PC 변경 시 필수 체크리스트` - 도커 환경 정리 가이드
+- `PC 변경 후 자주 발생하는 문제들` - 실제 경험 기반 트러블슈팅
+- `🚨 PC 변경 시 빠른 체크리스트` - 4단계 워크플로우
+
+#### **핵심 추가 명령어:**
+```bash
+docker system prune -f
+docker network prune -f  
+docker volume prune -f
+```
+
+### 📊 **Impact:**
+- 🔧 개발 환경 안정성 향상
+- ⏱️ PC 변경 시 설정 시간 단축 (수 시간 → 수 분)
+- 📖 문서화로 향후 동일 문제 예방
+
+**Type:** `fix`, `docs`, `chore`  
+**Scope:** `docker`, `environment`, `setup`  
+**Breaking Changes:** None
+
+
+이제 브랜치 기반 리팩토링 전략이 완전히 문서화되고 깃허브에 
+  저장되었습니다!
+
+C:\Users\seokho\Desktop\baro-calender-new\docs\implementation-verification\README.md
+이 파일 읽으면 됨 
