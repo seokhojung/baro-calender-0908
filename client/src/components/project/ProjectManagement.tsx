@@ -13,7 +13,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/dialog';
+} from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import { Project } from '@/types/project';
 import useProjectStore from '@/stores/projectStore';
