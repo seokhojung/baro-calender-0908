@@ -24,8 +24,9 @@ import {
 } from '@/types/schedule'
 import { useScheduleStore, useScheduleStoreSelectors } from '@/stores/scheduleStore'
 
-// Detect touch device
+// Detect touch device (safe for SSR)
 const isTouchDevice = () => {
+  if (typeof window === 'undefined') return false
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0
 }
 

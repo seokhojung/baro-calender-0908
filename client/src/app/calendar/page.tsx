@@ -22,8 +22,8 @@ export const metadata: Metadata = {
 
 export default function CalendarPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto p-0">
+    <main className="min-h-screen bg-background">
+      <div className="container mx-auto p-0">
         <Suspense
           fallback={
             <div className="flex items-center justify-center h-screen">
@@ -36,7 +36,7 @@ export default function CalendarPage() {
         >
           <CalendarContainer />
         </Suspense>
-      </main>
-    </div>
+      </div>
+    </main>
   )
 }
