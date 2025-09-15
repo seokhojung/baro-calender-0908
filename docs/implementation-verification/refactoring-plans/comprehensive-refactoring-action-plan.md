@@ -7,6 +7,32 @@
 - **목표 상태**: 전체 9.0/10+ (배포 가능)
 - **예상 기간**: 2-4주 (단계별 집중 투입)
 - **자동화 활용**: Living Documentation System 전면 적용
+- **브랜치 전략**: 안전한 브랜치 기반 단계별 리팩토링
+
+---
+
+## 🌿 **Git 브랜치 전략**
+
+### **브랜치 구조**
+```
+master (보호됨)
+└── refactor/stories-1.1-1.10-fixes (메인 리팩토링 브랜치)
+    ├── fix/tier1-emergency-fixes      # Tier 1: Emergency Fixes
+    ├── fix/tier2-core-implementation  # Tier 2: Core Implementation
+    ├── fix/tier3-quality-enhancement  # Tier 3: Quality Enhancement
+    └── fix/tier4-living-documentation # Tier 4: Living Documentation
+```
+
+### **브랜치별 작업 흐름**
+1. **각 Tier마다 독립 브랜치 생성**
+2. **이슈별 커밋으로 세밀한 버전 관리**
+3. **Tier 완료 시 메인 리팩토링 브랜치로 병합**
+4. **테스트 및 검증 후 master로 PR**
+
+### **Living Documentation 브랜치 연동**
+- 각 브랜치에서도 자동화 시스템 정상 동작
+- 브랜치별 문서 상태 추적
+- 병합 시 master 문서 자동 동기화
 
 ---
 
@@ -75,27 +101,53 @@ cd client && npm install react-dnd react-dnd-html5-backend react-window react-wi
 
 ### **🎯 Emergency Fixes 실행 순서**
 
+**Step 0: 브랜치 생성 및 자동화 활성화**
+```bash
+# 메인 리팩토링 브랜치 생성
+git checkout -b refactor/stories-1.1-1.10-fixes
+
+# Emergency fixes 서브 브랜치 생성
+git checkout -b fix/tier1-emergency-fixes
+
+# Living Documentation 자동화 활성화
+echo "node docs/implementation-verification/automation-tools/pre-commit-doc-sync.js" >> .husky/pre-commit
+```
+
 **Step 1: 패키지 설치**
 ```bash
 cd client
 npm install react-dnd react-dnd-html5-backend react-window @types/react-window
+
+# 패키지 설치 커밋
+git add package.json package-lock.json
+git commit -m "fix: Install missing critical dependencies
+
+- Add react-dnd, react-dnd-html5-backend for drag-and-drop
+- Add react-window, @types/react-window for virtualization
+- Resolves Critical Issue #3: Missing dependencies
+- Related Stories: 1.4, 1.6
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
 
 **Step 2: Store Export 수정**
-```javascript
-// projectStore.ts 마지막 줄에 추가
-export { 
-  useProjectStore, 
-  useProjectSelectors,
-  projectStore 
-};
+```bash
+# Store export 수정
+echo "export { useProjectStore, useProjectSelectors };" >> client/src/stores/projectStore.ts
+echo "export { useUserStore, useUserSelectors };" >> client/src/stores/userStore.ts
 
-// userStore.ts 마지막 줄에 추가
-export { 
-  useUserStore, 
-  useUserSelectors,
-  userStore 
-};
+# Store export 커밋
+git add client/src/stores/projectStore.ts client/src/stores/userStore.ts
+git commit -m "fix: Add missing useProjectStore and useUserStore exports
+
+- Export useProjectStore, useProjectSelectors from projectStore
+- Export useUserStore, useUserSelectors from userStore  
+- Resolves Critical Issue #1: Store export crisis
+- Related Stories: 1.3, 1.5
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
 
 **Step 3: AlertDialog 컴포넌트 생성**
@@ -465,9 +517,51 @@ npm run type-check
 
 ---
 
-**📋 계획 요약**: 
-- **Emergency Fixes** (24시간) → **Core Implementation** (1주일) → **Quality Enhancement** (2주일) → **Final Integration** (1주일)
-- **Living Documentation System**을 전 과정에 적용하여 **문서-구현 일치** 보장
-- **자동화 도구**로 **실시간 품질 모니터링** 및 **지속적 개선**
+## 🔄 **브랜치 병합 및 완료 전략**
 
-이 계획을 통해 **현재 7.0/10**에서 **목표 9.0/10+**으로 품질을 끌어올려 **배포 가능한 상태**로 만들 수 있습니다!
+### **Tier별 완료 기준 및 병합 절차**
+
+#### **Tier 1: Emergency Fixes 완료 시**
+```bash
+# Emergency fixes 브랜치에서 최종 검증
+git checkout fix/tier1-emergency-fixes
+npm run dev:client  # 빌드 성공 확인
+npm run type-check  # TypeScript 오류 없음 확인
+
+# 메인 리팩토링 브랜치로 병합
+git checkout refactor/stories-1.1-1.10-fixes
+git merge fix/tier1-emergency-fixes
+
+# 통합 테스트 후 결과 확인
+node docs/implementation-verification/automation-tools/daily-sync-checker.js
+
+# 품질 점수 7.0 → 7.8+ 달성 확인 후 다음 Tier 진행
+```
+
+#### **전체 리팩토링 완료 시 master로 PR**
+```bash
+# 최종 품질 검증 기준
+- 전체 품질 점수: 9.0/10+ 달성
+- Critical Issues: 0개
+- TypeScript 오류: 0개  
+- ESLint 경고: 최소화
+
+# master 브랜치로 PR 생성
+gh pr create --title "🚀 Stories 1.1-1.10 Critical Issues 해결 및 품질 개선" \
+  --body "전체 품질 점수 7.0→9.2 개선, Critical Issues 8개→0개 해결"
+```
+
+### **자동화 시스템 브랜치 연동**
+- 각 브랜치에서 커밋 시 관련 Story 문서 자동 업데이트
+- 브랜치별 품질 점수 추적  
+- master 병합 시 최종 문서 상태 동기화
+
+---
+
+**📋 계획 요약**: 
+- **브랜치 기반 안전한 리팩토링**: Emergency Fixes → Core Implementation → Quality Enhancement
+- **Living Documentation System 전면 적용**: 문서-구현 실시간 동기화
+- **자동화 도구**: 품질 모니터링 및 지속적 개선
+- **목표**: 현재 7.0/10 → 9.0/10+ 품질 달성으로 배포 가능 상태 완성
+
+브랜치 전략이 완전히 문서화되었습니다! 🚀
