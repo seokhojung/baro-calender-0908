@@ -1,7 +1,7 @@
 "use client";
 
 import React, { memo, useMemo, useCallback } from 'react';
-import { FixedSizeGrid as Grid } from 'react-window';
+import { Grid } from 'react-window';
 import { format, isToday } from 'date-fns';
 import { Calendar } from 'lucide-react';
 import { useOptimizedCalendar } from '@/hooks/useOptimizedCalendar';
@@ -247,11 +247,12 @@ const OptimizedYearView: React.FC<OptimizedYearViewProps> = ({
     if (!yearViewData?.eventsByMonth) return { date: null, eventCount: 0 };
 
     let maxEvents = 0;
-    let busiestMonthDate = null;
+    let busiestMonthDate: Date | null = null;
     
     Object.entries(yearViewData.eventsByMonth).forEach(([monthKey, events]) => {
-      if (events.length > maxEvents) {
-        maxEvents = events.length;
+      const eventsArray = events as Event[];
+      if (eventsArray.length > maxEvents) {
+        maxEvents = eventsArray.length;
         busiestMonthDate = new Date(monthKey + '-01');
       }
     });
@@ -315,17 +316,21 @@ const OptimizedYearView: React.FC<OptimizedYearViewProps> = ({
         {/* 12-month grid */}
         {shouldVirtualize ? (
           <div className="max-w-7xl mx-auto">
-            <Grid
-              columnCount={4}
-              columnWidth={280}
-              height={800}
-              rowCount={Math.ceil(gridData.months.length / 4)}
-              rowHeight={200}
-              itemData={gridData}
-              className="year-grid"
-            >
-              {GridItem}
-            </Grid>
+              <div style={{height: 800, width: 1120}}>
+                {/* @ts-ignore */}
+                <Grid
+                  height={800}
+                  width={1120}
+                  columnCount={4}
+                  columnWidth={280}
+                  rowCount={Math.ceil(gridData.months.length / 4)}
+                  rowHeight={200}
+                  itemData={gridData}
+                  className="year-grid"
+                >
+                  {GridItem as any}
+                </Grid>
+              </div>
           </div>
         ) : (
           <TraditionalGrid

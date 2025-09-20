@@ -28,7 +28,7 @@ jest.mock('@/components/providers/calendar-provider', () => ({
     dateUtils: {
       getMonthViewDays: jest.fn(() => {
         // Return a mock month grid (January 2024)
-        const days = [];
+        const days: Date[] = [];
         for (let i = 1; i <= 31; i++) {
           days.push(new Date(2024, 0, i));
         }

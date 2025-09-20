@@ -183,15 +183,31 @@ describe('ScheduleStore', () => {
       // Check for conflict with overlapping time
       const conflictingSchedule = {
         id: '2',
+        title: 'Conflicting Schedule',
+        description: 'Test conflict',
         startDateTime: '2024-12-09T10:30:00.000Z',
         endDateTime: '2024-12-09T11:30:00.000Z',
+        isAllDay: false,
+        timezone: 'Asia/Seoul',
+        projectId: '1',
+        project: { id: '1', name: 'Test Project', color: 'blue' },
         attendees: [
           {
+            userId: 'user1',
             email: 'test@example.com',
             name: 'Test User',
-            role: 'required' as const
+            role: 'required' as const,
+            status: 'accepted' as const
           }
-        ]
+        ],
+        status: 'confirmed' as const,
+        isPrivate: false,
+        attachments: [],
+        createdBy: 'user1',
+        updatedBy: 'user1',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        version: 1
       }
 
       let conflictResult
@@ -199,10 +215,11 @@ describe('ScheduleStore', () => {
         conflictResult = await result.current.checkConflicts(conflictingSchedule)
       })
 
-      expect(conflictResult.hasConflicts).toBe(true)
-      expect(conflictResult.conflicts).toHaveLength(1)
-      expect(conflictResult.conflicts[0].scheduleId).toBe('1')
-      expect(conflictResult.suggestions).toHaveLength(1)
+      expect(conflictResult).toBeDefined()
+      expect(conflictResult!.hasConflicts).toBe(true)
+      expect(conflictResult!.conflicts).toHaveLength(1)
+      expect(conflictResult!.conflicts[0].scheduleId).toBe('1')
+      expect(conflictResult!.suggestions).toHaveLength(1)
     })
 
     it('should not detect conflicts for non-overlapping times', async () => {
@@ -216,15 +233,31 @@ describe('ScheduleStore', () => {
       // Check for conflict with non-overlapping time
       const nonConflictingSchedule = {
         id: '2',
+        title: 'Non-conflicting Schedule',
+        description: 'Test non-conflict',
         startDateTime: '2024-12-09T12:00:00.000Z',
         endDateTime: '2024-12-09T13:00:00.000Z',
+        isAllDay: false,
+        timezone: 'Asia/Seoul',
+        projectId: '1',
+        project: { id: '1', name: 'Test Project', color: 'blue' },
         attendees: [
           {
+            userId: 'user1',
             email: 'test@example.com',
             name: 'Test User',
-            role: 'required' as const
+            role: 'required' as const,
+            status: 'accepted' as const
           }
-        ]
+        ],
+        status: 'confirmed' as const,
+        isPrivate: false,
+        attachments: [],
+        createdBy: 'user1',
+        updatedBy: 'user1',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        version: 1
       }
 
       let conflictResult
@@ -232,8 +265,9 @@ describe('ScheduleStore', () => {
         conflictResult = await result.current.checkConflicts(nonConflictingSchedule)
       })
 
-      expect(conflictResult.hasConflicts).toBe(false)
-      expect(conflictResult.conflicts).toHaveLength(0)
+      expect(conflictResult).toBeDefined()
+      expect(conflictResult!.hasConflicts).toBe(false)
+      expect(conflictResult!.conflicts).toHaveLength(0)
     })
   })
 

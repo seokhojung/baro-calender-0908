@@ -38,7 +38,7 @@ export const DraggableProjectCard: React.FC<DraggableProjectCardProps> = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   
-  const [{ handlerId }, drop] = useDrop({
+  const [{ handlerId }, drop] = useDrop<DragItem, void, { handlerId: any }>({
     accept: 'project-card',
     collect: (monitor) => ({
       handlerId: monitor.getHandlerId()
@@ -132,11 +132,11 @@ export const DraggableProjectCard: React.FC<DraggableProjectCardProps> = ({
         className
       )}
       style={{ opacity }}
-      data-handler-id={handlerId}
+      data-handler-id={handlerId as string}
     >
       {/* Drag Handle */}
       <div
-        ref={dragHandle}
+        ref={dragHandle as any}
         className={cn(
           "absolute left-1 top-1/2 -translate-y-1/2 z-10",
           "opacity-0 group-hover:opacity-100 transition-opacity",

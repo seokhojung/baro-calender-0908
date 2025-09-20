@@ -6,9 +6,9 @@
 export function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
+    r: parseInt(result[1]!, 16),
+    g: parseInt(result[2]!, 16),
+    b: parseInt(result[3]!, 16)
   } : null;
 }
 
@@ -53,11 +53,11 @@ export function hslToRgb(h: number, s: number, l: number): { r: number; g: numbe
 export function parseHslToRgb(hslString: string): { r: number; g: number; b: number } | null {
   const match = hslString.match(/hsl\(\s*(\d+)\s*,?\s*(\d+)%\s*,?\s*(\d+)%\s*\)/);
   if (!match) return null;
-  
-  const h = parseInt(match[1]);
-  const s = parseInt(match[2]);
-  const l = parseInt(match[3]);
-  
+
+  const h = parseInt(match[1]!);
+  const s = parseInt(match[2]!);
+  const l = parseInt(match[3]!);
+
   return hslToRgb(h, s, l);
 }
 

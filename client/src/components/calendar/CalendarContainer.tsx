@@ -127,6 +127,9 @@ export const CalendarContainer: React.FC = () => {
       const newSchedule: Schedule = {
         id: Date.now().toString(),
         ...data,
+        timezone: data.timezone || 'Asia/Seoul',
+        status: 'confirmed' as const,
+        attachments: [],
         project: { 
           id: data.projectId, 
           name: 'Selected Project', 
@@ -168,7 +171,10 @@ export const CalendarContainer: React.FC = () => {
 
   // Handle time slot click for creating new schedule
   const handleTimeSlotClick = useCallback((date: Date, time: string) => {
-    const [hours, minutes] = time.split(':').map(Number)
+    const timeParts = time.split(':').map(Number)
+    const hours = timeParts[0] ?? 0
+    const minutes = timeParts[1] ?? 0
+    
     const startDateTime = new Date(date)
     startDateTime.setHours(hours, minutes, 0, 0)
     
@@ -273,7 +279,7 @@ export const CalendarContainer: React.FC = () => {
                   {/* Schedule count badge */}
                   {schedulesByDate[format(day, 'yyyy-MM-dd')] && (
                     <Badge variant="secondary" className="text-xs mt-1">
-                      {schedulesByDate[format(day, 'yyyy-MM-dd')].length}
+                      {schedulesByDate[format(day, 'yyyy-MM-dd')]?.length || 0}
                     </Badge>
                   )}
                 </div>
@@ -375,8 +381,8 @@ export const CalendarContainer: React.FC = () => {
             <DragConflictDialog
               isOpen={hasConflictDialog}
               conflicts={pendingConflictResolution}
-              onResolve={scheduleStore.resolveConflict}
-              onOpenChange={scheduleStore.closeConflictDialog}
+              onResolve={(resolution) => scheduleStore.resolveConflict('', resolution)}
+              onOpenChange={() => scheduleStore.closeConflictDialog()}
             />
           )}
         </div>

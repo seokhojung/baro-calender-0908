@@ -216,6 +216,7 @@ export interface RecurrenceState {
   isGenerating: boolean
   editingInstance: EnhancedScheduleInstance | null
   editScope: EditScope
+  error?: { message: string; code: number } | null
   
   // Performance
   performanceMetrics: RecurrencePerformanceMetrics

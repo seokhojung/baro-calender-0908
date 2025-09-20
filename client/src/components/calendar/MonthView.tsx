@@ -28,6 +28,7 @@ interface DayProps {
   onDayClick: (date: Date) => void;
   onEventEdit?: (event: Event) => void;
   onEventDelete?: (event: Event) => void;
+  onEventCreate?: (date: Date) => void;
   onEventSelect?: (event: Event) => void;
   onEventMove: (eventId: string, newDate: Date) => void;
   selectedEventId: string | null;
@@ -45,6 +46,7 @@ const DayCell: React.FC<DayProps> = ({
   onDayClick,
   onEventEdit,
   onEventDelete,
+  onEventCreate,
   onEventSelect,
   onEventMove,
   selectedEventId,
@@ -76,7 +78,7 @@ const DayCell: React.FC<DayProps> = ({
 
   return (
     <div
-      ref={drop}
+      ref={drop as any}
       className={cn(
         "relative min-h-[120px] p-2 border-r border-b border-border/50 transition-colors",
         "hover:bg-muted/30 cursor-pointer",
@@ -274,6 +276,7 @@ const MonthView: React.FC<MonthViewProps> = ({
               onDayClick={handleDayClick}
               onEventEdit={onEventEdit}
               onEventDelete={onEventDelete}
+              onEventCreate={onEventCreate}
               onEventSelect={onEventSelect}
               onEventMove={handleEventMove}
               selectedEventId={store.selectedEventId}

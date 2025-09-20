@@ -1,7 +1,7 @@
 "use client";
 
 import React, { memo, useMemo, useState, useCallback } from 'react';
-import { FixedSizeGrid as Grid } from 'react-window';
+import { Grid } from 'react-window';
 import { useDrop } from 'react-dnd';
 import { format, isSameMonth, isToday, isSameDay } from 'date-fns';
 import { useOptimizedCalendar } from '@/hooks/useOptimizedCalendar';
@@ -29,6 +29,7 @@ interface DayCellProps {
   onDayClick: (date: Date) => void;
   onEventEdit?: (event: Event) => void;
   onEventDelete?: (event: Event) => void;
+  onEventCreate?: (date: Date) => void;
   onEventSelect?: (event: Event) => void;
   onEventMove: (eventId: string, newDate: Date) => void;
   selectedEventId: string | null;
@@ -65,6 +66,7 @@ const DayCell = memo<DayCellProps>(({
   onDayClick,
   onEventEdit,
   onEventDelete,
+  onEventCreate,
   onEventSelect,
   onEventMove,
   selectedEventId,
@@ -108,7 +110,7 @@ const DayCell = memo<DayCellProps>(({
 
   return (
     <div
-      ref={drop}
+      ref={drop as any}
       className={cn(
         "relative min-h-[120px] p-2 border-r border-b border-border/50 transition-colors",
         "hover:bg-muted/30 cursor-pointer",
@@ -198,6 +200,7 @@ const GridItem = memo<GridItemProps>(({ columnIndex, rowIndex, style, data }) =>
         onDayClick={data.onDayClick}
         onEventEdit={data.onEventEdit}
         onEventDelete={data.onEventDelete}
+        onEventCreate={data.onEventCreate}
         onEventSelect={data.onEventSelect}
         onEventMove={data.onEventMove}
         selectedEventId={data.store.selectedEventId}
@@ -252,6 +255,7 @@ const TraditionalGrid = memo<{
           onDayClick={onDayClick}
           onEventEdit={onEventEdit}
           onEventDelete={onEventDelete}
+          onEventCreate={onEventCreate}
           onEventSelect={onEventSelect}
           onEventMove={onEventMove}
           selectedEventId={store.selectedEventId}
@@ -349,17 +353,21 @@ const OptimizedMonthView: React.FC<OptimizedMonthViewProps> = ({
       {/* Calendar grid - virtualized or traditional */}
       {shouldVirtualize ? (
         <div className="flex-1">
-          <Grid
-            columnCount={7}
-            columnWidth={200}
-            height={600}
-            rowCount={Math.ceil(gridData.days.length / 7)}
-            rowHeight={120}
-            itemData={gridData}
-            className="calendar-grid"
-          >
-            {GridItem}
-          </Grid>
+            <div style={{height: 600, width: 1400}}>
+              {/* @ts-ignore */}
+              <Grid
+                height={600}
+                width={1400}
+                columnCount={7}
+                columnWidth={200}
+                rowCount={Math.ceil(gridData.days.length / 7)}
+                rowHeight={120}
+                itemData={gridData}
+                className="calendar-grid"
+              >
+                {GridItem as any}
+              </Grid>
+            </div>
         </div>
       ) : (
         <TraditionalGrid

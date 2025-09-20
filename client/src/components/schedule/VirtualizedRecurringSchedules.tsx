@@ -3,8 +3,8 @@
 
 'use client'
 
-import React, { useMemo, useState, useCallback } from 'react'
-import { FixedSizeList as List, areEqual } from 'react-window'
+import React, { useMemo, useState, useCallback, memo } from 'react'
+import { List } from 'react-window'
 import { format, parseISO, compareAsc } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { Calendar, Clock, Edit2, MoreHorizontal, Trash2 } from 'lucide-react'
@@ -335,15 +335,18 @@ const VirtualizedRecurringSchedules: React.FC<VirtualizedRecurringSchedulesProps
           </div>
         </div>
         
-        <List
-          height={600} // Fixed height for virtualization
-          itemCount={groupedByDate.length}
-          itemSize={getItemSize}
-          itemData={listItemData}
-          overscanCount={overscanCount}
-        >
-          {ListItem}
-        </List>
+        <div style={{height: 600}}>
+          {/* @ts-ignore */}
+          <List
+            height={600} // Fixed height for virtualization
+            itemCount={groupedByDate.length}
+            itemSize={getItemSize}
+            itemData={listItemData}
+            overscanCount={overscanCount}
+          >
+            {ListItem as any}
+          </List>
+        </div>
       </div>
     </TooltipProvider>
   )

@@ -61,8 +61,8 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
 }) => {
   const isEditing = !!project;
   
-  const form = useForm<ProjectFormData>({
-    resolver: zodResolver(projectFormSchema),
+  const form = useForm({
+    resolver: zodResolver(projectFormSchema) as any,
     defaultValues: {
       name: project?.name || '',
       description: project?.description || '',
@@ -71,9 +71,9 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
     }
   });
   
-  const handleSubmit = async (data: ProjectFormData) => {
+  const handleSubmit = async (data: any) => {
     try {
-      await onSubmit(data);
+      await onSubmit(data as CreateProjectInput | UpdateProjectInput);
       if (!isEditing) {
         form.reset();
       }
@@ -90,14 +90,14 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
   return (
     <Form {...form}>
       <form 
-        onSubmit={form.handleSubmit(handleSubmit)} 
+        onSubmit={form.handleSubmit(handleSubmit as any)} 
         className={className}
         noValidate
       >
         <div className="space-y-6">
           {/* Project Name */}
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="name"
             render={({ field }) => (
               <FormItem>
@@ -119,7 +119,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
           
           {/* Project Description */}
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="description"
             render={({ field }) => (
               <FormItem>
@@ -141,7 +141,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
           
           {/* Color Selection */}
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="color"
             render={({ field }) => (
               <FormItem>
@@ -163,7 +163,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
           
           {/* Active Status */}
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="isActive"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">

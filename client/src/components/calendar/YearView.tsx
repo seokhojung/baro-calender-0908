@@ -74,7 +74,7 @@ const YearView: React.FC<YearViewProps> = ({
         // Check if event overlaps with this month
         if (eventStartDate <= monthEnd && eventEndDate >= monthStart) {
           const monthKey = format(month, 'yyyy-MM');
-          grouped[monthKey].push(event);
+          grouped[monthKey]?.push(event);
         }
       });
     });

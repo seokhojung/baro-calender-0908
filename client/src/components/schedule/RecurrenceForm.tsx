@@ -51,7 +51,7 @@ const RecurrenceForm: React.FC<RecurrenceFormProps> = ({
     }
     return addMonths(new Date(), 6)
   })
-  const [weekDays, setWeekDays] = useState<WeekDay[]>(value.byWeekDay || ['MO'])
+  const [weekDays, setWeekDays] = useState<any[]>(value.byWeekDay || ['MO'])
   const [monthlyType, setMonthlyType] = useState<'date' | 'position'>(() => {
     return value.bySetPos && value.bySetPos.length > 0 ? 'position' : 'date'
   })

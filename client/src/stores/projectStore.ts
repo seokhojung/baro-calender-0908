@@ -64,6 +64,7 @@ interface ProjectActions {
   // Utility
   refetch: () => Promise<void>
   resetStore: () => void
+  getSortedProjects: (projects: Project[]) => Project[]
 }
 
 // Mock API with enhanced 8-color palette support

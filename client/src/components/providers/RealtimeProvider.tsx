@@ -8,11 +8,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { initializeRealtime, shutdownRealtime, getRealtimeManager } from '@/lib/realtime';
 import { useToast } from '@/hooks/use-toast';
-import type { ConnectionStatus } from '@/types/realtime';
+import type { ConnectionStatus as ConnectionStatusType } from '@/types/realtime';
 
 interface RealtimeContextType {
   isInitialized: boolean;
-  connectionStatus: ConnectionStatus;
+  connectionStatus: ConnectionStatusType;
   isConnected: boolean;
   error: string | null;
 }
@@ -34,7 +34,7 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
   enableToasts = true 
 }) => {
   const [isInitialized, setIsInitialized] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('disconnected');
+  const [connectionStatus, setConnectionStatus] = useState<typeof ConnectionStatus>('disconnected');
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 

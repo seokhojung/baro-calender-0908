@@ -16,6 +16,42 @@ interface ScheduleStoreState extends ScheduleState {
   _isInitialized: boolean
   _conflictDialogOpen: boolean
   _pendingConflictResolution: ConflictCheckResult | null
+
+  // CRUD Actions
+  setSchedules: (schedules: Schedule[]) => void
+  addSchedule: (schedule: Schedule) => void
+  updateSchedule: (id: string, updates: Partial<Schedule>) => void
+  deleteSchedule: (id: string) => void
+
+  // Drag & Drop Actions
+  startDrag: (schedule: Schedule) => void
+  updateDraggedSchedule: (updates: Partial<Schedule>) => void
+  commitDrag: () => Promise<void>
+  cancelDrag: () => void
+
+  // Conflict Management
+  checkConflicts: (schedule: Schedule) => Promise<ConflictCheckResult>
+  resolveConflict: (scheduleId: string, resolution: ConflictResolution) => void
+  closeConflictDialog: () => void
+
+  // View State Management
+  setViewMode: (viewMode: 'day' | 'week' | 'month' | 'agenda') => void
+  setSelectedDateRange: (dateRange: DateRange) => void
+  setSelectedProjectIds: (projectIds: string[]) => void
+  toggleShowAllDay: () => void
+  toggleShowPrivate: () => void
+
+  // Error & Loading
+  setError: (error: ApiError | null) => void
+  clearError: () => void
+  setLoading: (isLoading: boolean) => void
+
+  // Selection & UI
+  setSelectedSchedule: (schedule: Schedule | null) => void
+  openConflictDialog: (conflictResult: ConflictCheckResult) => void
+
+  // Real-time updates
+  handleRealtimeUpdate: (update: any) => void
 }
 
 export const useScheduleStore = create<ScheduleStoreState>()(

@@ -141,7 +141,7 @@ describe('CalendarProvider', () => {
   });
 
   it('should not load projects if they already exist', async () => {
-    (useProjectStore as jest.Mock).mockReturnValue({
+    (useProjectStore as unknown as jest.Mock).mockReturnValue({
       ...mockProjectStore,
       projects: [{ id: 1, name: 'Test Project' }]
     });

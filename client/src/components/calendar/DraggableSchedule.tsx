@@ -37,19 +37,23 @@ export const DraggableSchedule: React.FC<DraggableScheduleProps> = ({
     begin: () => {
       startDrag(schedule)
     },
-    end: (item, monitor) => {
+    end: (item: any, monitor: any) => {
       if (monitor.didDrop()) {
         commitDrag()
       } else {
         cancelDrag()
       }
     },
-    collect: (monitor) => ({
+    collect: (monitor: any) => ({
       isDragging: monitor.isDragging(),
     }),
   }), [schedule, timeSlot, startDrag, commitDrag, cancelDrag])
 
-  const projectColor = PROJECT_COLORS[schedule.project.color] || PROJECT_COLORS['blue']
+  const projectColor = PROJECT_COLORS[schedule.project.color] || PROJECT_COLORS['blue'] || {
+    primary: '#3b82f6',
+    secondary: '#dbeafe',
+    text: '#1e40af'
+  }
 
   const handleKeyboardMove = useCallback((event: React.KeyboardEvent) => {
     // Handle keyboard-based movement for accessibility
@@ -91,7 +95,7 @@ export const DraggableSchedule: React.FC<DraggableScheduleProps> = ({
 
   return (
     <div
-      ref={drag}
+      ref={drag as any}
       className={cn(
         "schedule-item relative cursor-move border-l-4 p-2 rounded-r transition-all",
         "hover:shadow-md focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-primary",

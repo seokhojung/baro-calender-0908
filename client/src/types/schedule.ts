@@ -70,6 +70,7 @@ export interface CreateScheduleInput {
   startDateTime: string
   endDateTime: string
   isAllDay: boolean
+  timezone?: string
   projectId: string
   location?: string
   url?: string

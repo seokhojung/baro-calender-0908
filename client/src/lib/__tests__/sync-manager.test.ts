@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import SyncManager, { initSyncManager, getSyncManager } from '../sync-manager';
 import useCalendarStore from '@/stores/calendarStore';
-import { Event } from '@/types/store';
+import type { Event } from '@/types/store';
 
 // Mock Apollo Client
 const mockApolloClient = new ApolloClient({

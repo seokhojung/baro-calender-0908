@@ -55,7 +55,7 @@ export function DateTimePicker({
 
     const [hours, minutes] = timeValue.split(':').map(Number)
     const newDateTime = new Date(date)
-    newDateTime.setHours(hours, minutes, 0, 0)
+    newDateTime.setHours(hours || 0, minutes || 0, 0, 0)
     
     setSelectedDate(newDateTime)
     onChange?.(newDateTime)
@@ -66,7 +66,7 @@ export function DateTimePicker({
     
     if (selectedDate) {
       const [hours, minutes] = time.split(':').map(Number)
-      if (!isNaN(hours) && !isNaN(minutes) && hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60) {
+      if (!isNaN(hours || 0) && !isNaN(minutes || 0) && (hours || 0) >= 0 && (hours || 0) < 24 && (minutes || 0) >= 0 && (minutes || 0) < 60) {
         const newDateTime = new Date(selectedDate)
         newDateTime.setHours(hours, minutes, 0, 0)
         setSelectedDate(newDateTime)

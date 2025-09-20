@@ -11,7 +11,7 @@ import { useScheduleStore } from '@/stores/scheduleStore'
 function combineDateAndTime(date: Date, timeString: string): Date {
   const [hours, minutes] = timeString.split(':').map(Number)
   const combined = new Date(date)
-  combined.setHours(hours, minutes, 0, 0)
+  combined.setHours(hours || 0, minutes || 0, 0, 0)
   return combined
 }
 
@@ -53,7 +53,7 @@ export const TimeSlotDropZone: React.FC<TimeSlotDropZoneProps> = ({
 
   return (
     <div
-      ref={drop}
+      ref={drop as any}
       className={cn(
         "time-slot relative h-12 border-b border-border/50 transition-all duration-200",
         "hover:bg-muted/50",

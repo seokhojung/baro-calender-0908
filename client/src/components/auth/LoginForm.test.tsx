@@ -213,7 +213,9 @@ describe('LoginForm', () => {
       // Fill in the 6-digit code
       const code = '123456'
       for (let i = 0; i < 6; i++) {
-        await user.type(otpSlots[i], code[i])
+        if (otpSlots[i]) {
+          await user.type(otpSlots[i]!, code[i]!)
+        }
       }
 
       const verifyButton = screen.getByRole('button', { name: '인증 확인' })

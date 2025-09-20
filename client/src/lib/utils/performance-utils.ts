@@ -495,3 +495,104 @@ export class ChunkedProcessor {
     });
   }
 }
+
+/**
+ * Performance Tracker for monitoring component performance
+ */
+export interface PerformanceMetrics {
+  renderTime: number;
+  componentMounts: number;
+  rerenders: number;
+  memoryUsage: number;
+  eventCount: number;
+  lastUpdate: number;
+}
+
+export class PerformanceTracker {
+  private static instance: PerformanceTracker;
+  private metrics: Map<string, PerformanceMetrics[]> = new Map();
+  private maxSamples: number = 100;
+
+  static getInstance(): PerformanceTracker {
+    if (!PerformanceTracker.instance) {
+      PerformanceTracker.instance = new PerformanceTracker();
+    }
+    return PerformanceTracker.instance;
+  }
+
+  recordMetrics(componentName: string, metrics: PerformanceMetrics): void {
+    if (!this.metrics.has(componentName)) {
+      this.metrics.set(componentName, []);
+    }
+    
+    const componentMetrics = this.metrics.get(componentName)!;
+    componentMetrics.push(metrics);
+    
+    // Keep only the last maxSamples entries
+    if (componentMetrics.length > this.maxSamples) {
+      componentMetrics.shift();
+    }
+  }
+
+  getAverageMetrics(componentName: string): PerformanceMetrics | null {
+    const componentMetrics = this.metrics.get(componentName);
+    if (!componentMetrics || componentMetrics.length === 0) {
+      return null;
+    }
+
+    const avg = componentMetrics.reduce(
+      (acc, metric) => ({
+        renderTime: acc.renderTime + metric.renderTime,
+        componentMounts: acc.componentMounts + metric.componentMounts,
+        rerenders: acc.rerenders + metric.rerenders,
+        memoryUsage: acc.memoryUsage + metric.memoryUsage,
+        eventCount: acc.eventCount + metric.eventCount,
+        lastUpdate: Math.max(acc.lastUpdate, metric.lastUpdate)
+      }),
+      { renderTime: 0, componentMounts: 0, rerenders: 0, memoryUsage: 0, eventCount: 0, lastUpdate: 0 }
+    );
+
+    const count = componentMetrics.length;
+    return {
+      renderTime: avg.renderTime / count,
+      componentMounts: avg.componentMounts / count,
+      rerenders: avg.rerenders / count,
+      memoryUsage: avg.memoryUsage / count,
+      eventCount: avg.eventCount / count,
+      lastUpdate: avg.lastUpdate
+    };
+  }
+
+  getPerformanceReport(): string {
+    let report = '=== Performance Report ===\n\n';
+    
+    for (const [componentName, metrics] of this.metrics.entries()) {
+      const avg = this.getAverageMetrics(componentName);
+      if (avg) {
+        report += `${componentName}:\n`;
+        report += `  Avg Render Time: ${avg.renderTime.toFixed(2)}ms\n`;
+        report += `  Component Mounts: ${avg.componentMounts}\n`;
+        report += `  Avg Rerenders: ${avg.rerenders.toFixed(1)}\n`;
+        report += `  Memory Usage: ${avg.memoryUsage.toFixed(1)}MB\n`;
+        report += `  Event Count: ${avg.eventCount}\n`;
+        report += `  Samples: ${metrics.length}\n\n`;
+      }
+    }
+    
+    return report;
+  }
+
+  clear(): void {
+    this.metrics.clear();
+  }
+
+  getStats(): { componentCount: number; totalSamples: number } {
+    const totalSamples = Array.from(this.metrics.values())
+      .reduce((total, samples) => total + samples.length, 0);
+    
+    return {
+      componentCount: this.metrics.size,
+      totalSamples
+    };
+  }
+}

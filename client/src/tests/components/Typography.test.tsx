@@ -310,7 +310,7 @@ describe('Typography Component', () => {
 
   describe('Edge Cases', () => {
     it('should handle empty children', () => {
-      render(<Typography variant="body1"></Typography>)
+      render(<Typography variant="body1" children="" />)
       
       const element = screen.getByText('', { exact: false })
       expect(element).toBeInTheDocument()

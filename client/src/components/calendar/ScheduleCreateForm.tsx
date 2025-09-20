@@ -51,16 +51,20 @@ const createScheduleSchema = z.object({
   description: z.string().optional(),
   startDateTime: z.string().min(1, '시작 시간을 선택해주세요'),
   endDateTime: z.string().min(1, '종료 시간을 선택해주세요'),
-  isAllDay: z.boolean().default(false),
+  isAllDay: z.boolean(),
+  timezone: z.string().optional(),
   projectId: z.string().min(1, '프로젝트를 선택해주세요'),
   location: z.string().optional(),
   url: z.string().url('올바른 URL을 입력해주세요').optional().or(z.literal('')),
   attendees: z.array(z.object({
     email: z.string().email(),
     name: z.string(),
-    role: z.enum(['organizer', 'required', 'optional']).default('required')
-  })).default([]),
-  isPrivate: z.boolean().default(false)
+    role: z.enum(['organizer', 'required', 'optional']),
+    status: z.enum(['pending', 'accepted', 'declined', 'tentative']).optional(),
+    responseAt: z.string().optional()
+  })),
+  recurrenceRule: z.any().optional(),
+  isPrivate: z.boolean()
 }).refine(
   (data) => {
     const start = new Date(data.startDateTime)
@@ -72,6 +76,8 @@ const createScheduleSchema = z.object({
     path: ["endDateTime"]
   }
 )
+
+type FormData = z.infer<typeof createScheduleSchema>
 
 // Mock projects data - this would come from a store or API
 const mockProjects: Project[] = [
@@ -91,7 +97,7 @@ export const ScheduleCreateForm: React.FC<ScheduleCreateFormProps> = ({
   const [showConflictDetails, setShowConflictDetails] = useState(false)
   const [isCheckingConflicts, setIsCheckingConflicts] = useState(false)
 
-  const form = useForm<CreateScheduleInput>({
+  const form = useForm<FormData>({
     resolver: zodResolver(createScheduleSchema),
     defaultValues: {
       title: initialData?.title || '',
@@ -99,25 +105,36 @@ export const ScheduleCreateForm: React.FC<ScheduleCreateFormProps> = ({
       startDateTime: initialData?.startDateTime || new Date().toISOString(),
       endDateTime: initialData?.endDateTime || addHours(new Date(), 1).toISOString(),
       isAllDay: initialData?.isAllDay || false,
+      timezone: initialData?.timezone || 'Asia/Seoul',
       projectId: initialData?.projectId || '',
       location: initialData?.location || '',
       url: initialData?.url || '',
       attendees: initialData?.attendees || [],
+      recurrenceRule: initialData?.recurrenceRule || undefined,
       isPrivate: initialData?.isPrivate || false,
     }
   })
 
   // Real-time conflict checking
   const debouncedConflictCheck = useCallback(
-    debounce(async (formData: Partial<CreateScheduleInput>) => {
+    debounce(async (formData: Partial<FormData>) => {
       if (formData.startDateTime && formData.endDateTime && formData.attendees) {
         setIsCheckingConflicts(true)
         try {
+          // Convert FormData attendees to CreateScheduleInput format
+          const attendeesForConflictCheck = formData.attendees.map(({ email, name, role, status, responseAt }) => ({
+            email,
+            name,
+            role,
+            ...(status && { status }),
+            ...(responseAt && { responseAt })
+          }))
+
           const result = await checkConflicts({
             startDateTime: formData.startDateTime,
             endDateTime: formData.endDateTime,
-            attendees: formData.attendees
-          })
+            attendees: attendeesForConflictCheck
+          } as any)
           setConflictResult(result)
         } catch (error) {
           console.error('Conflict check failed:', error)
@@ -131,13 +148,24 @@ export const ScheduleCreateForm: React.FC<ScheduleCreateFormProps> = ({
 
   useEffect(() => {
     const subscription = form.watch((formData) => {
-      debouncedConflictCheck(formData as Partial<CreateScheduleInput>)
+      debouncedConflictCheck(formData as Partial<FormData>)
     })
     return () => subscription.unsubscribe()
   }, [form, debouncedConflictCheck])
 
-  const handleFormSubmit = (data: CreateScheduleInput) => {
-    onSubmit(data)
+  const handleFormSubmit = (data: FormData) => {
+    // Convert FormData to CreateScheduleInput by removing userId from attendees
+    const createScheduleInput: CreateScheduleInput = {
+      ...data,
+      attendees: data.attendees.map(({ email, name, role, status, responseAt }) => ({
+        email,
+        name,
+        role,
+        ...(status && { status }),
+        ...(responseAt && { responseAt })
+      })) as CreateScheduleInput['attendees']
+    }
+    onSubmit(createScheduleInput)
   }
 
   const formatTimeRange = (start: string, end: string) => {

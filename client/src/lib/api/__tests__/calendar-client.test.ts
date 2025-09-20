@@ -93,7 +93,7 @@ describe('CalendarAPIClient', () => {
       });
 
       expect(result.events).toHaveLength(1);
-      expect(result.events[0].title).toBe('Test Event');
+      expect(result.events[0]!.title).toBe('Test Event');
       expect(result.total).toBe(1);
     });
 
@@ -117,7 +117,7 @@ describe('CalendarAPIClient', () => {
         offset: 10
       });
 
-      const calledUrl = mockFetch.mock.calls[0][0] as string;
+      const calledUrl = mockFetch.mock.calls[0]![0] as string;
       expect(calledUrl).toContain('tenant_id=1');
       expect(calledUrl).toContain('project_id=2');
       expect(calledUrl).toContain('from=2024-01-01T00%3A00%3A00.000Z');

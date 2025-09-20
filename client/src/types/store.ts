@@ -18,6 +18,12 @@ export interface Event {
   color: string;
   category?: string;
   projectId?: string;
+  tenantId?: number;  // For multi-tenant support in performance tests
+  status?: 'confirmed' | 'tentative' | 'cancelled';
+  priority?: 'high' | 'normal' | 'low';
+  isRecurring?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
   recurring?: {
     type: 'daily' | 'weekly' | 'monthly' | 'yearly';
     interval: number;

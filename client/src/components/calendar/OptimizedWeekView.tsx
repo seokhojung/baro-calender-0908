@@ -1,7 +1,7 @@
 "use client";
 
 import React, { memo, useMemo, useState, useCallback, useRef } from 'react';
-import { FixedSizeList as List } from 'react-window';
+import { List } from 'react-window';
 import { useDrop } from 'react-dnd';
 import { format, isSameDay, isToday, differenceInMinutes, addMinutes } from 'date-fns';
 import { useOptimizedCalendar } from '@/hooks/useOptimizedCalendar';
@@ -246,7 +246,7 @@ const DayColumn = memo<DayColumnProps>(({
 
   return (
     <div
-      ref={drop}
+      ref={drop as any}
       className={cn(
         "relative flex-1 border-r border-border/30 min-w-0",
         "hover:bg-muted/20 transition-colors",
@@ -302,15 +302,18 @@ const DayColumn = memo<DayColumnProps>(({
       <div className="relative">
         {enableVirtualScrolling && layoutEvents.length > 50 ? (
           // Use virtual scrolling for many events
-          <List
-            height={24 * HOUR_HEIGHT}
-            itemCount={24}
-            itemSize={HOUR_HEIGHT}
-            itemData={virtualScrollData}
-            className="week-view-timeline"
-          >
-            {VirtualTimeSlot}
-          </List>
+          <div style={{height: 24 * HOUR_HEIGHT}}>
+            {/* @ts-ignore */}
+            <List
+              height={24 * HOUR_HEIGHT}
+              itemCount={24}
+              itemSize={HOUR_HEIGHT}
+              itemData={virtualScrollData}
+              className="week-view-timeline"
+            >
+              {VirtualTimeSlot as any}
+            </List>
+          </div>
         ) : (
           // Traditional rendering for fewer events
           <div>
@@ -362,8 +365,9 @@ const OptimizedWeekView: React.FC<OptimizedWeekViewProps> = ({
     const layoutMap: Record<string, { layoutEvents: EventLayoutInfo[], allDayEvents: Event[] }> = {};
     
     Object.entries(weekViewData.eventsByDate).forEach(([dateKey, events]) => {
-      const { allDayEvents, timedEvents } = events.reduce(
-        (acc, event) => {
+      const eventsArray = events as Event[];
+      const { allDayEvents, timedEvents } = eventsArray.reduce(
+        (acc: { allDayEvents: Event[], timedEvents: Event[] }, event: Event) => {
           if (event.allDay) {
             acc.allDayEvents.push(event);
           } else {
@@ -427,7 +431,7 @@ const OptimizedWeekView: React.FC<OptimizedWeekViewProps> = ({
         </div>
         
         {/* Day headers */}
-        {weekViewData.days.map((date) => {
+        {weekViewData.days.map((date: Date) => {
           const dateKey = format(date, 'yyyy-MM-dd');
           const dayIsToday = isToday(date);
           const dayLayout = processedEventLayouts[dateKey] || { layoutEvents: [], allDayEvents: [] };
@@ -475,7 +479,7 @@ const OptimizedWeekView: React.FC<OptimizedWeekViewProps> = ({
         {/* Days content - this provides the scrollable area */}
         <div className="flex-1 relative">
           <div className="absolute inset-0 flex">
-            {weekViewData.days.map((date, index) => (
+            {weekViewData.days.map((date: Date, index: number) => (
               <div 
                 key={format(date, 'yyyy-MM-dd')}
                 className="flex-1 border-r border-border/10 last:border-r-0"

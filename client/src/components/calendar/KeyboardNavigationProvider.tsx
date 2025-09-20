@@ -162,10 +162,12 @@ export const KeyboardNavigationProvider: React.FC<KeyboardNavigationProviderProp
     }
 
     const newEvent = events[newIndex];
-    setFocusedEventId(newEvent.id);
-    setNavigationMode('event');
-    
-    announce(`Selected event: ${newEvent.title}`);
+    if (newEvent) {
+      setFocusedEventId(newEvent.id);
+      setNavigationMode('event');
+
+      announce(`Selected event: ${newEvent.title}`);
+    }
   }, [focusedDate, focusedEventId, getEventsForDate, announce]);
 
   const handleKeyboardShortcut = useCallback((key: string, ctrlKey = false, shiftKey = false, altKey = false): boolean => {

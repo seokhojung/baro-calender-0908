@@ -92,6 +92,7 @@ const EventCard: React.FC<EventCardProps> = ({
     if (!isMobile || !touchOptimized) return;
     
     const touch = e.touches[0];
+    if (!touch) return;
     touchStartPos.current = { x: touch.clientX, y: touch.clientY };
     
     // Start long press timer
@@ -113,8 +114,8 @@ const EventCard: React.FC<EventCardProps> = ({
     
     const touch = e.changedTouches[0];
     const startPos = touchStartPos.current;
-    
-    if (startPos) {
+
+    if (startPos && touch) {
       const deltaX = Math.abs(touch.clientX - startPos.x);
       const deltaY = Math.abs(touch.clientY - startPos.y);
       
@@ -253,7 +254,9 @@ const EventCard: React.FC<EventCardProps> = ({
       <div
         ref={(node) => {
           drag(node);
-          cardRef.current = node;
+          if (cardRef.current !== node) {
+            (cardRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+          }
         }}
         onClick={handleClick}
         onTouchStart={handleTouchStart}
@@ -363,7 +366,9 @@ const EventCard: React.FC<EventCardProps> = ({
     <Card
       ref={(node) => {
         drag(node);
-        cardRef.current = node;
+        if (cardRef.current !== node) {
+          (cardRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        }
       }}
       className={cn(
         "relative cursor-pointer transition-all duration-200 hover:shadow-md focus-visible-only",

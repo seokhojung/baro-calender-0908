@@ -186,7 +186,7 @@ const ResponsiveCalendarContent: React.FC<Omit<ResponsiveCalendarProps, 'initial
       className={cn("h-full", className)}
       touchOptimized={true}
       safeArea={true}
-      {...bind()}
+      {...(bind as any)}
     >
       {/* Mobile Header */}
       <MobileHeader

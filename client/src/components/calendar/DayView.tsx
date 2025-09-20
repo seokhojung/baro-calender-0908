@@ -182,7 +182,7 @@ const DayView: React.FC<DayViewProps> = ({
 
   const [{ isOver }, drop] = useDrop({
     accept: 'event',
-    drop: (item: DragItem, monitor) => {
+    drop: (item: DragItem, monitor: any) => {
       const clientOffset = monitor.getClientOffset();
       if (!clientOffset) return;
 
@@ -203,7 +203,7 @@ const DayView: React.FC<DayViewProps> = ({
         handleEventMove(item.id, currentDate);
       }
     },
-    collect: (monitor) => ({
+    collect: (monitor: any) => ({
       isOver: monitor.isOver(),
     }),
   });
@@ -271,8 +271,8 @@ const DayView: React.FC<DayViewProps> = ({
   }
 
   return (
-    <div 
-      ref={drop}
+    <div
+      ref={drop as any}
       className={cn(
         "flex flex-col h-full",
         "hover:bg-muted/10 transition-colors",

@@ -28,7 +28,7 @@ export const useAccessibility = (config: AccessibilityConfig = {}) => {
   const focusHistoryRef = useRef<HTMLElement[]>([]);
 
   // Announce changes to screen readers
-  const announce = useCallback((message: string, priority: 'polite' | 'assertive' = liveRegion) => {
+  const announce = useCallback((message: string, priority: 'polite' | 'assertive' = liveRegion as 'polite' | 'assertive') => {
     if (!announceChanges) return;
 
     // Create or update live region

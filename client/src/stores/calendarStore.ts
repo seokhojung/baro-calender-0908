@@ -47,9 +47,9 @@ const useCalendarStore = create<CalendarStore>()(
             
             // Transform client data to API format
             const apiData = CalendarDataTransformer.clientEventToAPI(
-              eventData as CalendarEventTransformed,
+              eventData as unknown as CalendarEventTransformed,
               eventData.tenantId || 1, // Default tenant - should come from auth
-              eventData.projectId || 1  // Default project - should come from context
+              Number(eventData.projectId) || 1  // Default project - should come from context
             ) as CreateEventRequest;
             
             const response = await calendarAPI.createEvent(apiData);
@@ -59,7 +59,7 @@ const useCalendarStore = create<CalendarStore>()(
             const transformedEvent = CalendarDataTransformer.apiEventToClient(createdEvent);
             
             set((state) => ({
-              events: [...state.events, transformedEvent as Event],
+              events: [...state.events, transformedEvent as unknown as Event],
               lastUpdated: new Date()
             }), false, 'calendar/addEvent');
             
@@ -80,9 +80,9 @@ const useCalendarStore = create<CalendarStore>()(
             
             // Transform client data to API format
             const apiData = CalendarDataTransformer.clientEventToAPI(
-              eventData as CalendarEventTransformed,
+              eventData as unknown as CalendarEventTransformed,
               eventData.tenantId || 1, // Default tenant - should come from auth
-              eventData.projectId || 1  // Default project - should come from context
+              Number(eventData.projectId) || 1  // Default project - should come from context
             ) as UpdateEventRequest;
             
             await calendarAPI.updateEvent(Number(id), apiData);
@@ -93,7 +93,7 @@ const useCalendarStore = create<CalendarStore>()(
             
             set((state) => ({
               events: state.events.map(event => 
-                event.id === id ? transformedEvent as Event : event
+                event.id === id ? transformedEvent as unknown as Event : event
               ),
               lastUpdated: new Date()
             }), false, 'calendar/updateEvent');
@@ -162,7 +162,7 @@ const useCalendarStore = create<CalendarStore>()(
             const transformedEvents = CalendarDataTransformer.transformEventsList(response.events);
             
             set({
-              events: transformedEvents as Event[],
+              events: transformedEvents as unknown as Event[],
               lastUpdated: new Date()
             }, false, 'calendar/loadEvents');
             

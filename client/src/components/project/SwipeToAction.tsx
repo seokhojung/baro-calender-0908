@@ -48,7 +48,7 @@ export const SwipeToAction: React.FC<SwipeToActionProps> = ({
     ({ active, movement: [mx], direction: [xDir], distance, cancel }) => {
       if (disabled) return;
       
-      const trigger = distance > threshold;
+      const trigger = Math.abs(mx) > threshold;
       
       // Determine which actions to show based on swipe direction
       const actions = mx < 0 ? rightActions : leftActions;

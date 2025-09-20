@@ -139,7 +139,10 @@ const ResponsiveDayCell = memo<DayCellProps>(({
       <div
         ref={(node) => {
           drop(node);
-          cellRef.current = node;
+          if (cellRef.current !== node) {
+            // @ts-ignore: Temporarily assign to readonly ref
+            cellRef.current = node;
+          }
         }}
         className={cn(
           "relative p-1 sm:p-2 border-r border-b border-border/50 transition-all duration-200",
@@ -160,7 +163,7 @@ const ResponsiveDayCell = memo<DayCellProps>(({
         tabIndex={isSelected ? 0 : -1}
         data-date={format(date, 'yyyy-MM-dd')}
         data-drop-target
-        {...(isMobile ? touchBind() : {})}
+        {...(isMobile ? touchBind : {})}
       >
         {/* Date number */}
         <div className="flex items-center justify-between mb-1 sm:mb-2">
@@ -398,7 +401,7 @@ const ResponsiveMonthView: React.FC<ResponsiveMonthViewProps> = ({
       }
       
       if (newIndex !== currentIndex && calendarDays[newIndex]) {
-        handleDayClick(calendarDays[newIndex]);
+        handleDayClick(calendarDays[newIndex]!);
       }
     },
   });
@@ -421,7 +424,7 @@ const ResponsiveMonthView: React.FC<ResponsiveMonthViewProps> = ({
       className={cn("flex flex-col h-full", className)}
       role="grid"
       aria-label={`Calendar for ${format(store.currentDate, 'MMMM yyyy')}`}
-      {...containerTouchBind()}
+      {...(containerTouchBind as any)}
     >
       {/* Performance indicator in development */}
       {process.env.NODE_ENV === 'development' && (

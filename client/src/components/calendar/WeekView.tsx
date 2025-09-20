@@ -194,15 +194,20 @@ const DayColumn: React.FC<DayColumnProps> = ({
 
   const handleTimeSlotClick = (hour: number, minute: number) => {
     if (!onEventCreate) return;
-    
+
     const newDateTime = new Date(date);
     newDateTime.setHours(hour, minute, 0, 0);
     onEventCreate(date, newDateTime);
   };
 
+  const handleEventResize = (eventId: string, newStartTime: Date, newEndTime: Date) => {
+    // Handle event resize logic here
+    console.log('Event resize:', eventId, newStartTime, newEndTime);
+  };
+
   return (
     <div
-      ref={drop}
+      ref={drop as any}
       className={cn(
         "relative flex-1 border-r border-border/30 min-w-0",
         "hover:bg-muted/20 transition-colors",
