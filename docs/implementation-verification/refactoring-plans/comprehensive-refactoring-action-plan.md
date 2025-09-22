@@ -327,16 +327,16 @@ npx ts-unused-exports client/tsconfig.json --findCompletelyUnusedFiles
 # Husky 설치 및 설정
 npm install --save-dev husky
 npx husky install
-npx husky add .husky/pre-commit "node docs/sync-automation/pre-commit-doc-sync.js"
+npx husky add .husky/pre-commit "node docs/implementation-verification/automation-tools/pre-commit-doc-sync.js"
 ```
 
 **2. Daily Sync 자동화**
 ```bash
 # Windows Task Scheduler 설정
-schtasks /create /tn "DailyDocSync" /tr "node C:\Users\seokho\Desktop\baro-calender-new\docs\sync-automation\daily-sync-checker.js" /sc daily /st 09:00
+schtasks /create /tn "DailyDocSync" /tr "node C:\Users\seokho\Desktop\baro-calender-new\docs\implementation-verification\automation-tools\daily-sync-checker.js" /sc daily /st 09:00
 
 # 또는 수동 실행
-node docs/sync-automation/daily-sync-checker.js
+node docs/implementation-verification/automation-tools/daily-sync-checker.js
 ```
 
 **3. 실시간 문서 업데이트**
@@ -365,7 +365,7 @@ git commit -m "Fix project CRUD components"
 **주간 루틴:**
 ```bash
 # 전체 동기화 상태 점검
-node docs/sync-automation/daily-sync-checker.js
+node docs/implementation-verification/automation-tools/daily-sync-checker.js
 
 # 문서-구현 일치성 검토
 # 발견된 이슈들 우선순위별 해결
@@ -497,7 +497,7 @@ npm run dev:client
 # → http://localhost:3000/projects
 
 # 5. 자동화 도구 테스트
-node docs/sync-automation/daily-sync-checker.js
+node docs/implementation-verification/automation-tools/daily-sync-checker.js
 ```
 
 ### **내일 (48시간 내) 해야 할 일:**
@@ -505,7 +505,7 @@ node docs/sync-automation/daily-sync-checker.js
 ```bash
 # 1. Living Documentation 활성화
 npx husky install
-npx husky add .husky/pre-commit "node docs/sync-automation/pre-commit-doc-sync.js"
+npx husky add .husky/pre-commit "node docs/implementation-verification/automation-tools/pre-commit-doc-sync.js"
 
 # 2. Story 1.5 구현 시작
 # ProjectCreateForm.tsx 뼈대 구현

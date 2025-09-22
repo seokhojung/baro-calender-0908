@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useMemo } from 'react';
-import { useDrop } from 'react-dnd';
+import React, { memo, useMemo, useCallback } from 'react';
+import { useDrop, DropTargetMonitor } from 'react-dnd';
 import { format, isToday, startOfDay, endOfDay, differenceInMinutes } from 'date-fns';
 import { useCalendar } from '@/components/providers/calendar-provider';
 import { useProjectStore } from '@/stores/projectStore';
@@ -30,17 +30,16 @@ interface EventLayoutInfo extends Event {
 }
 
 const PIXELS_PER_MINUTE = 1;
-const HOUR_HEIGHT = 60;
 const ALL_DAY_HEIGHT = 60; // Larger all-day section for single day view
 
-const DayView: React.FC<DayViewProps> = ({
+const DayView: React.FC<DayViewProps> = memo(function DayView({
   className,
   onEventEdit,
   onEventDelete,
   onEventCreate,
   onEventSelect
-}) => {
-  const { store, selectors, dateUtils, isReady } = useCalendar();
+}: DayViewProps) {
+  const { store, isReady } = useCalendar();
   const projectStore = useProjectStore();
   
   const currentDate = store.currentDate;
@@ -57,7 +56,7 @@ const DayView: React.FC<DayViewProps> = ({
 
   // Get events for current date (with project filtering)
   const dayEvents = useMemo(() => {
-    const dateKey = format(currentDate, 'yyyy-MM-dd');
+    // const dateKey = format(currentDate, 'yyyy-MM-dd');
     
     // Filter events based on selected projects
     const filteredEvents = projectStore.selectedProjectIds.length > 0
@@ -182,7 +181,7 @@ const DayView: React.FC<DayViewProps> = ({
 
   const [{ isOver }, drop] = useDrop({
     accept: 'event',
-    drop: (item: DragItem, monitor: any) => {
+    drop: (item: DragItem, monitor: DropTargetMonitor) => {
       const clientOffset = monitor.getClientOffset();
       if (!clientOffset) return;
 
@@ -203,24 +202,24 @@ const DayView: React.FC<DayViewProps> = ({
         handleEventMove(item.id, currentDate);
       }
     },
-    collect: (monitor: any) => ({
+    collect: (monitor: DropTargetMonitor) => ({
       isOver: monitor.isOver(),
     }),
   });
 
-  const getEventProjectColor = (event: Event) => {
+  const getEventProjectColor = useCallback((event: Event) => {
     return projectColors[event.category || 'default'] || event.color || '#3b82f6';
-  };
+  }, [projectColors]);
 
-  const handleTimeSlotClick = (hour: number, minute: number) => {
+  const handleTimeSlotClick = useCallback((hour: number, minute: number) => {
     if (!onEventCreate) return;
-    
+
     const newDateTime = new Date(currentDate);
     newDateTime.setHours(hour, minute, 0, 0);
     onEventCreate(newDateTime);
-  };
+  }, [onEventCreate, currentDate]);
 
-  const handleEventMove = async (eventId: string, newDate: Date, newTime?: Date) => {
+  const handleEventMove = useCallback(async (eventId: string, newDate: Date, newTime?: Date) => {
     try {
       const event = store.events.find(e => e.id === eventId);
       if (!event) return;
@@ -249,9 +248,9 @@ const DayView: React.FC<DayViewProps> = ({
     } catch (error) {
       console.error('Failed to move event:', error);
     }
-  };
+  }, [store, currentDate]);
 
-  const handleEventResize = async (eventId: string, newStartDate: Date, newEndDate: Date) => {
+  const handleEventResize = useCallback(async (eventId: string, newStartDate: Date, newEndDate: Date) => {
     try {
       await store.updateEvent(eventId, {
         startDate: newStartDate,
@@ -260,7 +259,7 @@ const DayView: React.FC<DayViewProps> = ({
     } catch (error) {
       console.error('Failed to resize event:', error);
     }
-  };
+  }, [store]);
 
   if (!isReady) {
     return (
@@ -272,7 +271,7 @@ const DayView: React.FC<DayViewProps> = ({
 
   return (
     <div
-      ref={drop as any}
+      ref={drop as unknown as React.Ref<HTMLDivElement>}
       className={cn(
         "flex flex-col h-full",
         "hover:bg-muted/10 transition-colors",
@@ -411,6 +410,8 @@ const DayView: React.FC<DayViewProps> = ({
       </div>
     </div>
   );
-};
+});
+
+DayView.displayName = 'DayView';
 
 export default DayView;

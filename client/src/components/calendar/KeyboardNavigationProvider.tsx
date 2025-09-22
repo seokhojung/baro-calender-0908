@@ -4,7 +4,7 @@ import React, { createContext, useContext, useCallback, useEffect, useRef, useSt
 import { useCalendar } from '@/components/providers/calendar-provider';
 import { useAccessibility, useAriaLiveRegion } from '@/hooks/useAccessibility';
 import { ViewMode, Event } from '@/types/store';
-import { addDays, subDays, addWeeks, subWeeks, addMonths, subMonths, format, isSameDay } from 'date-fns';
+import { addDays, subDays, addWeeks, subWeeks, addMonths, subMonths, format } from 'date-fns';
 
 interface KeyboardNavigationContextType {
   focusedDate: Date | null;
@@ -15,7 +15,7 @@ interface KeyboardNavigationContextType {
   setFocusedEventId: (eventId: string | null) => void;
   setNavigationMode: (mode: 'date' | 'event') => void;
   handleKeyboardShortcut: (key: string, ctrlKey?: boolean, shiftKey?: boolean, altKey?: boolean) => boolean;
-  registerKeyboardElement: (element: HTMLElement, type: 'date' | 'event', data: any) => void;
+  registerKeyboardElement: (element: HTMLElement, type: 'date' | 'event', data: { date?: Date; event?: Event }) => void;
   unregisterKeyboardElement: (element: HTMLElement) => void;
 }
 
@@ -42,14 +42,14 @@ export const KeyboardNavigationProvider: React.FC<KeyboardNavigationProviderProp
 }) => {
   const { store } = useCalendar();
   const { announce } = useAriaLiveRegion();
-  const { generateAriaLabel } = useAccessibility();
+  const { } = useAccessibility();
   
   const [focusedDate, setFocusedDate] = useState<Date | null>(null);
   const [focusedEventId, setFocusedEventId] = useState<string | null>(null);
   const [navigationMode, setNavigationMode] = useState<'date' | 'event'>('date');
   const [isKeyboardNavigationActive, setIsKeyboardNavigationActive] = useState(false);
   
-  const keyboardElementsRef = useRef<Map<HTMLElement, { type: 'date' | 'event', data: any }>>(new Map());
+  const keyboardElementsRef = useRef<Map<HTMLElement, { type: 'date' | 'event', data: { date?: Date; event?: Event } }>>(new Map());
 
   // Initialize focused date when store changes
   useEffect(() => {
@@ -138,7 +138,7 @@ export const KeyboardNavigationProvider: React.FC<KeyboardNavigationProviderProp
     announce(`Navigated to ${format(newDate, 'EEEE, MMMM d, yyyy')}`);
   }, [store, focusedDate, announce]);
 
-  const getEventsForDate = useCallback((date: Date): Event[] => {
+  const getEventsForDate = useCallback((_date?: Date): Event[] => {
     // This should be implemented based on your calendar store structure
     // For now, returning empty array
     return [];
@@ -320,7 +320,7 @@ export const KeyboardNavigationProvider: React.FC<KeyboardNavigationProviderProp
     store
   ]);
 
-  const registerKeyboardElement = useCallback((element: HTMLElement, type: 'date' | 'event', data: any) => {
+  const registerKeyboardElement = useCallback((element: HTMLElement, type: 'date' | 'event', data: { date?: Date; event?: Event }) => {
     keyboardElementsRef.current.set(element, { type, data });
   }, []);
 

@@ -1,5 +1,15 @@
 import { TokenManager, type AuthTokens, type User } from './tokenManager'
 
+// Mock navigation and location
+const mockAssign = jest.fn()
+Object.defineProperty(window, 'location', {
+  value: {
+    href: '',
+    assign: mockAssign
+  },
+  writable: true
+})
+
 // Mock localStorage and sessionStorage
 const mockLocalStorage = {
   getItem: jest.fn(),
@@ -288,10 +298,7 @@ describe('TokenManager', () => {
       const expiredTime = Date.now() - 5 * 60 * 1000 // 5 minutes ago
       mockLocalStorage.getItem.mockReturnValue(expiredTime.toString())
       
-      // Mock window.location with assign method
-      const mockLocationAssign = jest.fn()
-      delete (window as any).location
-      window.location = { href: '', assign: mockLocationAssign } as any
+      // Use existing mocked location
 
       const clearTokensSpy = jest.spyOn(TokenManager, 'clearTokens')
 

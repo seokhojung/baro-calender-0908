@@ -16,10 +16,10 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 
-import { 
-  ConflictResolutionProps, 
+import {
+  ConflictResolutionProps,
   ConflictResolution,
-  PROJECT_COLORS 
+  ConflictCheckResult
 } from '@/types/schedule'
 
 export const ConflictResolutionDialog: React.FC<ConflictResolutionProps & {
@@ -249,7 +249,7 @@ export const ConflictResolutionDialog: React.FC<ConflictResolutionProps & {
 // Simplified version for drag and drop conflicts
 export const DragConflictDialog: React.FC<{
   isOpen: boolean
-  conflicts: any
+  conflicts: ConflictCheckResult
   onResolve: (resolution: ConflictResolution) => void
   onOpenChange: (open: boolean) => void
 }> = ({

@@ -17,16 +17,16 @@ cd C:\Users\seokho\Desktop\baro-calender-new
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 # Node.js 스크립트 권한 설정 (Linux/Mac의 경우)
-# chmod +x docs/sync-automation/*.js
+# chmod +x docs/implementation-verification/automation-tools/*.js
 ```
 
 ### **2단계: 도구 테스트**
 ```bash
 # Pre-commit 도구 테스트
-node docs/sync-automation/pre-commit-doc-sync.js
+node docs/implementation-verification/automation-tools/pre-commit-doc-sync.js
 
-# Daily sync 도구 테스트  
-node docs/sync-automation/daily-sync-checker.js
+# Daily sync 도구 테스트
+node docs/implementation-verification/automation-tools/daily-sync-checker.js
 ```
 
 ### **3단계: Git Hook 설정 (선택적)**
@@ -36,7 +36,7 @@ npm install --save-dev husky
 npx husky install
 
 # Pre-commit hook 추가
-npx husky add .husky/pre-commit "node docs/sync-automation/pre-commit-doc-sync.js"
+npx husky add .husky/pre-commit "node docs/implementation-verification/automation-tools/pre-commit-doc-sync.js"
 ```
 
 ---
@@ -49,7 +49,7 @@ npx husky add .husky/pre-commit "node docs/sync-automation/pre-commit-doc-sync.j
 
 **언제 실행되나:**
 - `git commit` 명령어 실행 시 자동
-- 또는 수동으로 `node docs/sync-automation/pre-commit-doc-sync.js` 실행
+- 또는 수동으로 `node docs/implementation-verification/automation-tools/pre-commit-doc-sync.js` 실행
 
 **무엇을 하나:**
 ```
@@ -82,7 +82,7 @@ $ git commit -m "Fix useProjectStore export"
 **목적**: 전체 프로젝트의 문서-구현 동기화 상태를 매일 점검하고 보고서 생성
 
 **언제 실행하나:**
-- 매일 아침 수동: `node docs/sync-automation/daily-sync-checker.js`
+- 매일 아침 수동: `node docs/implementation-verification/automation-tools/daily-sync-checker.js`
 - 자동화: cron job 또는 GitHub Actions
 
 **무엇을 확인하나:**
@@ -95,7 +95,7 @@ $ git commit -m "Fix useProjectStore export"
 ```
 
 **생성되는 파일:**
-- `docs/sync-logs/daily-sync-YYYY-MM-DD.md`
+- `docs/implementation-verification/logs/sync-logs/daily-sync-YYYY-MM-DD.md`
 
 ---
 
@@ -104,10 +104,10 @@ $ git commit -m "Fix useProjectStore export"
 ### **매일 아침 루틴 (5분)**
 ```bash
 # 1. 어제의 동기화 보고서 확인
-ls docs/sync-logs/daily-sync-*.md | tail -1 | xargs cat
+ls docs/implementation-verification/logs/sync-logs/daily-sync-*.md | tail -1 | xargs cat
 
 # 2. 오늘의 동기화 상태 점검
-node docs/sync-automation/daily-sync-checker.js
+node docs/implementation-verification/automation-tools/daily-sync-checker.js
 
 # 3. 발견된 이슈가 있다면 우선순위 확인
 # (보고서에서 Critical Issues 섹션 확인)
@@ -124,16 +124,16 @@ git commit -m "Update project CRUD components"
 # → 자동으로 관련 문서 업데이트됨
 
 # 개발 완료 후: 수동으로 전체 동기화 확인
-node docs/sync-automation/daily-sync-checker.js
+node docs/implementation-verification/automation-tools/daily-sync-checker.js
 ```
 
 ### **주간/마일스톤별 활용**
 ```bash
 # 지난 주 동기화 보고서들 일괄 확인
-ls docs/sync-logs/daily-sync-2025-09-*.md | xargs grep "동기화율"
+ls docs/implementation-verification/logs/sync-logs/daily-sync-2025-09-*.md | xargs grep "동기화율"
 
 # 특정 스토리의 이슈 추세 확인
-ls docs/sync-logs/*.md | xargs grep "Story 1.5"
+ls docs/implementation-verification/logs/sync-logs/*.md | xargs grep "Story 1.5"
 ```
 
 ---
@@ -201,7 +201,7 @@ ${generatePrioritizedActionItems()}
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 # Linux/Mac
-chmod +x docs/sync-automation/*.js
+chmod +x docs/implementation-verification/automation-tools/*.js
 ```
 
 **2. "Cannot find module" 오류**
@@ -238,11 +238,11 @@ touch docs/sync-logs/test.txt && rm docs/sync-logs/test.txt
 ### **디버깅 방법**
 ```bash
 # 상세 로그와 함께 실행
-NODE_DEBUG=* node docs/sync-automation/daily-sync-checker.js
+NODE_DEBUG=* node docs/implementation-verification/automation-tools/daily-sync-checker.js
 
 # 특정 부분만 테스트
 node -e "
-const checker = require('./docs/sync-automation/daily-sync-checker.js');
+const checker = require('./docs/implementation-verification/automation-tools/daily-sync-checker.js');
 console.log('Test result:', checker.checkBuildStatus());
 "
 ```
@@ -257,11 +257,11 @@ console.log('Test result:', checker.checkBuildStatus());
 - `docs/implementation-verification/` - 검증 관련 문서들
 
 **자동화 스크립트:**
-- `docs/sync-automation/pre-commit-doc-sync.js` - Pre-commit hook
-- `docs/sync-automation/daily-sync-checker.js` - 일일 동기화 체크
+- `docs/implementation-verification/automation-tools/pre-commit-doc-sync.js` - Pre-commit hook
+- `docs/implementation-verification/automation-tools/daily-sync-checker.js` - 일일 동기화 체크
 
 **생성되는 파일들:**
-- `docs/sync-logs/daily-sync-YYYY-MM-DD.md` - 일일 보고서
+- `docs/implementation-verification/logs/sync-logs/daily-sync-YYYY-MM-DD.md` - 일일 보고서
 - 각 스토리 문서의 Dev Agent Record - 자동 업데이트
 
 ---

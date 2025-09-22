@@ -9,6 +9,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { SimpleThemeToggle, ThemeToggle } from "@/components/ui/theme-toggle";
 import { DatePicker } from "@/components/ui/date-picker";
+import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 
 export default function DemoPage() {
@@ -16,6 +17,22 @@ export default function DemoPage() {
 
   return (
     <div className="container mx-auto p-6 space-y-8">
+      {/* Development Environment Warning */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200">
+                개발 환경 전용
+              </Badge>
+              <span className="text-sm text-amber-700 dark:text-amber-300">
+                이 페이지는 개발 환경에서만 접근 가능합니다
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-center">
         <div className="text-center space-y-4 flex-1">
           <h1 className="text-4xl font-bold text-project-blue-600 dark:text-project-blue-400">Design System Demo</h1>

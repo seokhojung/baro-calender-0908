@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from 'react';
-import { format, isSameMonth, isToday, isSameDay, startOfDay, getDaysInMonth } from 'date-fns';
+import { format, isSameMonth, isToday, startOfDay } from 'date-fns';
 import { Event } from '@/types/store';
 import { cn } from '@/lib/utils';
 import { CalendarDateUtils } from '@/lib/utils/date-utils';

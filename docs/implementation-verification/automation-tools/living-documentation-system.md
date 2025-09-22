@@ -97,17 +97,17 @@
 ### **핵심 문서들**
 ```
 docs/
-├── living-documentation-system.md          # 이 문서
-├── sync-automation/                         # 자동화 설정
-│   ├── pre-commit-doc-sync.js              # Git hook
-│   ├── build-status-updater.js             # 빌드 결과 반영
-│   └── verification-scheduler.js           # 정기 검증
+├── implementation-verification/
+│   ├── automation-tools/                    # 자동화 도구
+│   │   ├── living-documentation-system.md  # 이 문서
+│   │   ├── pre-commit-doc-sync.js          # Git hook
+│   │   └── daily-sync-checker.js           # 일일 동기화 체크
+│   └── logs/sync-logs/                     # 동기화 로그
 ├── templates/
-│   ├── story-template-living.md            # Living Documentation 템플릿
-│   └── daily-sync-template.md              # 일일 동기화 템플릿
-└── sync-logs/                              # 동기화 로그
-    ├── daily-sync-YYYY-MM-DD.md           # 일일 동기화 결과
-    └── integration-sync-YYYY-MM-DD.md     # 통합 검증 결과
+│   └── story-verification-template.md      # 스토리 검증 템플릿
+└── frontend-stories/                       # 스토리 문서들
+    ├── 1.1.project-initialization-setup.md
+    └── ... (기타 스토리 파일들)
 ```
 
 ---
@@ -117,7 +117,7 @@ docs/
 ### **생성된 자동화 도구 개요**
 
 **1. `pre-commit-doc-sync.js`** - Git 커밋 전 문서 동기화 체크
-**2. `daily-sync-checker.js`** - 일일 전체 시스템 동기화 상태 점검
+**2. `daily-sync-checker.js`** - 일일 전체 시스템 동기화 상태 점검 (v4.0 업그레이드)
 
 ### **1. Pre-commit Hook (매 커밋시)**
 ```javascript
@@ -133,7 +133,7 @@ CHANGED_FILES=$(git diff --cached --name-only)
 # 2. 스토리 관련 파일 변경 시 문서 업데이트 확인
 if echo "$CHANGED_FILES" | grep -E "(components|stores|pages)" > /dev/null; then
   echo "📋 관련 스토리 문서 업데이트가 필요할 수 있습니다"
-  node docs/sync-automation/pre-commit-doc-sync.js
+  node docs/implementation-verification/automation-tools/pre-commit-doc-sync.js
 fi
 
 # 3. 빌드 성공 여부 확인 (선택적)
@@ -146,9 +146,9 @@ fi
 echo "✅ Living Documentation 동기화 검사 완료"
 ```
 
-### **2. 빌드 상태 자동 반영**
+### **2. 빌드 상태 자동 반영 (참고용 - 실제로는 daily-sync-checker.js가 담당)**
 ```javascript
-// docs/sync-automation/build-status-updater.js
+// 참고: 실제로는 daily-sync-checker.js에서 이 기능을 수행
 const fs = require('fs');
 const { execSync } = require('child_process');
 
@@ -207,26 +207,33 @@ function updateStoryStatuses(status, errorMessage = '') {
 updateBuildStatus();
 ```
 
-### **3. 일일 동기화 체크 (daily-sync-checker.js)**
+### **3. 일일 동기화 체크 (daily-sync-checker.js v4.0)**
 
 **🎯 기능:**
 - 모든 스토리의 문서-구현 일치성 검사
 - 빌드 상태 자동 확인 (TypeScript, ESLint)
 - 일일 동기화 보고서 자동 생성
 - Critical Issues 자동 감지 및 분류
+- **NEW**: 빠른 모드 지원 (--quick)
+- **NEW**: 진행률 표시 및 성능 지표
 
 **📋 사용법:**
 ```bash
-# 수동 실행
-node docs/sync-automation/daily-sync-checker.js
+# 수동 실행 (전체 모드)
+node docs/implementation-verification/automation-tools/daily-sync-checker.js
 
-# 자동 실행 (매일 오전 9시)
-crontab -e
-# 추가: 0 9 * * * cd /path/to/project && node docs/sync-automation/daily-sync-checker.js
+# 빠른 모드 (개발 중)
+node docs/implementation-verification/automation-tools/daily-sync-checker.js --quick
+
+# 도움말
+node docs/implementation-verification/automation-tools/daily-sync-checker.js --help
+
+# Windows 자동 실행 (매일 오전 9시)
+schtasks /create /tn "DailyDocSync" /tr "node C:\path\to\project\docs\implementation-verification\automation-tools\daily-sync-checker.js" /sc daily /st 09:00
 ```
 
 **📊 생성되는 보고서:**
-- `docs/sync-logs/daily-sync-YYYY-MM-DD.md`
+- `docs/implementation-verification/logs/sync-logs/daily-sync-YYYY-MM-DD.md`
 - 스토리별 동기화 상태 테이블
 - Critical Issues 목록 및 액션 아이템
 - 빌드 상태 및 품질 지표
@@ -256,31 +263,21 @@ $ git commit -m "Update project store"
    - client/src/stores/projectStore.ts
    - client/src/components/project/ProjectManagement.tsx
    - client/src/types/project.ts
-🎯 스토리 관련 파일들 (3개):
-   - client/src/stores/projectStore.ts
-   - client/src/components/project/ProjectManagement.tsx
-   - client/src/types/project.ts
 📖 영향받는 스토리들: 1.3, 1.5
 ✅ Story 1.3 문서 업데이트됨
 ✅ Story 1.5 문서 업데이트됨
-📋 총 2개 스토리 문서가 업데이트되었습니다.
-🧪 빌드 상태 확인 중...
-✅ TypeScript: 오류 없음
-✅ ESLint: 기본 규칙 준수
 ✅ Living Documentation 동기화 검사 완료
 ```
 
-**Daily Sync 실행 예시:**
+**Daily Sync v4.0 실행 예시:**
 ```bash
-$ node docs/sync-automation/daily-sync-checker.js
-📅 2025-09-11 일일 동기화 검증 시작
-🔍 전체 시스템 빌드 상태 확인 중...
-📊 일일 검증 요약:
-   동기화율: 80%
-   총 이슈: 5개
-   Critical 스토리: 2개
-⚠️ 동기화 상태 보통 - 개선 필요
-✅ 일일 동기화 보고서 생성 완료: docs/sync-logs/daily-sync-2025-09-11.md
+$ node docs/implementation-verification/automation-tools/daily-sync-checker.js --quick
+🚀 바로캘린더 최첨단 자동화 시스템 v4.0
+⚡ 실행 모드: 빠른 모드 (예상 시간: 30초)
+🔄 [██████████] 100% - Phase 4/4: 종합 분석 완료
+✅ 바로캘린더 문서 자동화 시스템 실행 완벽 성공!
+📊 동기화율: 100% (목표 90% 달성)
+⏱️ 총 실행 시간: 25초
 ```
 
 ### **5. 자동화 도구 커스터마이징**
@@ -309,9 +306,9 @@ if (analysis.syncRate >= 95) { // 90% → 95%로 상향
 }
 ```
 
-### **원래 코드 (참고용)**
+### **참고: 이전 버전 코드 (현재는 v4.0 업그레이드됨)**
 ```javascript
-// docs/sync-automation/daily-sync-check.js
+// 이전 버전 참고용 - 현재는 daily-sync-checker.js v4.0 사용
 const fs = require('fs');
 
 function generateDailySyncReport() {
@@ -335,7 +332,7 @@ ${generateActionItems()}
 **자동 생성**: Living Documentation System
 `;
 
-  fs.writeFileSync(`docs/sync-logs/daily-sync-${today}.md`, report);
+  fs.writeFileSync(`docs/implementation-verification/logs/sync-logs/daily-sync-${today}.md`, report);
   console.log(`✅ 일일 동기화 보고서 생성 완료: ${today}`);
 }
 
@@ -446,15 +443,18 @@ generateDailySyncReport();
 npm install --save-dev husky
 npx husky install
 
-# 2. 자동화 스크립트 권한 설정
-chmod +x docs/sync-automation/*.js
+# 2. 자동화 스크립트 권한 설정 (Linux/Mac)
+chmod +x docs/implementation-verification/automation-tools/*.js
 
-# 3. 일일 동기화 cron 설정 (선택적)
+# 3. Windows 일일 동기화 스케줄 설정
+schtasks /create /tn "DailyDocSync" /tr "node C:\path\to\project\docs\implementation-verification\automation-tools\daily-sync-checker.js" /sc daily /st 09:00
+
+# 또는 Linux/Mac cron 설정
 # crontab -e
-# 0 9 * * * cd /path/to/project && node docs/sync-automation/daily-sync-check.js
+# 0 9 * * * cd /path/to/project && node docs/implementation-verification/automation-tools/daily-sync-checker.js
 
 # 4. Pre-commit hook 활성화
-npx husky add .husky/pre-commit "node docs/sync-automation/pre-commit-doc-sync.js"
+npx husky add .husky/pre-commit "node docs/implementation-verification/automation-tools/pre-commit-doc-sync.js"
 ```
 
 ### **VS Code 확장 설정 (권장)**

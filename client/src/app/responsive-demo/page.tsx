@@ -26,7 +26,7 @@ const ResponsiveDemoPage: React.FC = () => {
   const [enableA11y, setEnableA11y] = useState(true);
   const [enableTouch, setEnableTouch] = useState(true);
   const [showPerformanceData, setShowPerformanceData] = useState(false);
-  const [performanceData, setPerformanceData] = useState<any>(null);
+  const [performanceData, setPerformanceData] = useState<unknown>(null);
 
   const { 
     deviceCapabilities, 
@@ -36,27 +36,42 @@ const ResponsiveDemoPage: React.FC = () => {
 
   const optimizedConfig = getOptimizedConfig();
 
-  const handleEventEdit = (event: any) => {
-    console.log('Edit event:', event);
+  const handleEventEdit = (event: unknown) => {
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.log('Edit event:', event);
+    }
   };
 
-  const handleEventDelete = (event: any) => {
-    console.log('Delete event:', event);
+  const handleEventDelete = (event: unknown) => {
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.log('Delete event:', event);
+    }
   };
 
   const handleEventCreate = (date?: Date) => {
-    console.log('Create event for:', date);
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.log('Create event for:', date);
+    }
   };
 
-  const handleEventSelect = (event: any) => {
-    console.log('Select event:', event);
+  const handleEventSelect = (event: unknown) => {
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.log('Select event:', event);
+    }
   };
 
   const handleSettings = () => {
-    console.log('Open settings');
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.log('Open settings');
+    }
   };
 
-  const handlePerformanceData = (data: any) => {
+  const handlePerformanceData = (data: unknown) => {
     setPerformanceData(data);
   };
 
@@ -348,6 +363,20 @@ const ResponsiveDemoPage: React.FC = () => {
       />
 
       <div className="max-w-7xl mx-auto space-y-4">
+        {/* Development Environment Warning */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200">
+                개발 환경 전용
+              </Badge>
+              <span className="text-sm text-amber-700 dark:text-amber-300">
+                반응형 및 접근성 기능 테스트 페이지
+              </span>
+            </div>
+          </div>
+        )}
+
         <div className="text-center py-6">
           <h1 className="text-3xl font-bold mb-2">
             Responsive Calendar Demo

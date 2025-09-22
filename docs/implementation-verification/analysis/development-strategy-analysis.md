@@ -251,8 +251,8 @@ npm install react-dnd react-dnd-html5-backend react-window
 **2. Living Documentation System 활용**
 ```bash
 # 자동화 도구 즉시 적용
-node docs/sync-automation/pre-commit-doc-sync.js
-node docs/sync-automation/daily-sync-checker.js
+node docs/implementation-verification/automation-tools/pre-commit-doc-sync.js
+node docs/implementation-verification/automation-tools/daily-sync-checker.js
 ```
 
 **3. 팀 전체의 품질 의식 전환**

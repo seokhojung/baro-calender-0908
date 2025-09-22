@@ -177,7 +177,7 @@ const CalendarSidebar: React.FC<CalendarSidebarProps> = ({
       {!store.selectedDate && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm">Today's Events</CardTitle>
+            <CardTitle className="text-sm">Today&apos;s Events</CardTitle>
           </CardHeader>
           <CardContent className="p-4">
             <EventList events={todayEvents} title="" />

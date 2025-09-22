@@ -7,7 +7,7 @@ import { format, differenceInMinutes, isToday } from 'date-fns';
 import { useOptimizedCalendar } from '@/hooks/useOptimizedCalendar';
 import EventCard, { DragItem } from './EventCard';
 import TimeGrid from './TimeGrid';
-import CurrentTimeIndicator from './CurrentTimeIndicator';
+// import CurrentTimeIndicator from './CurrentTimeIndicator';
 import { Event } from '@/types/store';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -47,7 +47,7 @@ interface TimeSlotProps {
 
 interface VirtualTimeSlotProps {
   index: number;
-  style: any;
+  style: React.CSSProperties;
   data: {
     date: Date;
     events: EventLayoutInfo[];
@@ -396,7 +396,7 @@ const OptimizedDayView: React.FC<OptimizedDayViewProps> = ({
   const dayIsToday = isToday(store.currentDate);
 
   return (
-    <div ref={drop as any} className={cn("flex flex-col h-full", className, isOver && "bg-blue-100/20")}>
+    <div ref={drop as React.Ref<HTMLDivElement>} className={cn("flex flex-col h-full", className, isOver && "bg-blue-100/20")}>
       {/* Performance indicator in development */}
       {process.env.NODE_ENV === 'development' && (
         <div className="text-xs text-muted-foreground p-2 bg-muted/20 border-b">
@@ -500,16 +500,15 @@ const OptimizedDayView: React.FC<OptimizedDayViewProps> = ({
           
           {shouldUseVirtualScrolling ? (
               <div style={{height: window.innerHeight - 200}}>
-                {/* @ts-nocheck */}
-                {/* @ts-ignore */}
+                {/* @ts-expect-error - React.Window usage for virtualization */}
                 {React.createElement('div', { style: { height: window.innerHeight - 200 } },
-                  React.createElement(List as any, {
+                  React.createElement(List as React.ComponentType<unknown>, {
                     height: window.innerHeight - 200,
                     itemCount: 48,
                     itemSize: HALF_HOUR_HEIGHT,
                     itemData: virtualScrollData,
                     className: "day-view-timeline",
-                    children: VirtualTimeSlot
+                    // children: VirtualTimeSlot
                   })
                 )}
               </div>

@@ -39,11 +39,11 @@ interface DayCellProps {
 interface GridItemProps {
   columnIndex: number;
   rowIndex: number;
-  style: any;
+  style: React.CSSProperties;
   data: {
     days: Date[];
     eventsByDate: Record<string, Event[]>;
-    store: any;
+    store: { currentDate: Date; selectedDate: Date | null; viewMode: string };
     projectColors: Record<string, string>;
     onDayClick: (date: Date) => void;
     onEventEdit?: (event: Event) => void;
@@ -110,7 +110,7 @@ const DayCell = memo<DayCellProps>(({
 
   return (
     <div
-      ref={drop as any}
+      ref={drop as React.Ref<HTMLDivElement>}
       className={cn(
         "relative min-h-[120px] p-2 border-r border-b border-border/50 transition-colors",
         "hover:bg-muted/30 cursor-pointer",
@@ -216,7 +216,7 @@ GridItem.displayName = 'GridItem';
 const TraditionalGrid = memo<{
   days: Date[];
   eventsByDate: Record<string, Event[]>;
-  store: any;
+  store: { currentDate: Date; selectedDate: Date | null; viewMode: string };
   projectColors: Record<string, string>;
   onDayClick: (date: Date) => void;
   onEventEdit?: (event: Event) => void;
@@ -354,7 +354,7 @@ const OptimizedMonthView: React.FC<OptimizedMonthViewProps> = ({
       {shouldVirtualize ? (
         <div className="flex-1">
             <div style={{height: 600, width: 1400}}>
-              {/* @ts-ignore */}
+              {/* @ts-expect-error - FixedSizeGrid virtualization */}
               <Grid
                 height={600}
                 width={1400}
@@ -365,7 +365,7 @@ const OptimizedMonthView: React.FC<OptimizedMonthViewProps> = ({
                 itemData={gridData}
                 className="calendar-grid"
               >
-                {GridItem as any}
+                {GridItem as React.ComponentType}
               </Grid>
             </div>
         </div>

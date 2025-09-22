@@ -29,7 +29,7 @@ const CalendarContent: React.FC<Omit<CalendarProps, 'initialDate' | 'autoLoad'>>
   onEventSelect,
   onSettings
 }) => {
-  const [_selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [, setSelectedEvent] = useState<Event | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const handleEventSelect = (event: Event) => {

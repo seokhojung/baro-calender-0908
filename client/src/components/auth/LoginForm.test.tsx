@@ -23,9 +23,9 @@ describe('LoginForm', () => {
   const mockVerifyTwoFactor = jest.fn()
 
   interface MockAuthStore {
-    login: jest.MockedFunction<any>
-    loginWithProvider: jest.MockedFunction<any>
-    verifyTwoFactor: jest.MockedFunction<any>
+    login: jest.MockedFunction<(email: string, password: string, rememberMe?: boolean) => Promise<void>>
+    loginWithProvider: jest.MockedFunction<(provider: string) => Promise<void>>
+    verifyTwoFactor: jest.MockedFunction<(token: string) => Promise<void>>
     isLoading: boolean
     error: { message: string } | null
     requiresTwoFactor: boolean
@@ -126,7 +126,7 @@ describe('LoginForm', () => {
       mockUseAuthStore.mockReturnValue({
         ...defaultStoreState,
         isLoading: true
-      } as any)
+      } as MockAuthStore)
 
       render(<LoginForm />)
 
@@ -139,7 +139,7 @@ describe('LoginForm', () => {
       mockUseAuthStore.mockReturnValue({
         ...defaultStoreState,
         error: { message: errorMessage }
-      } as any)
+      } as MockAuthStore)
 
       render(<LoginForm />)
 
@@ -192,7 +192,7 @@ describe('LoginForm', () => {
         ...defaultStoreState,
         requiresTwoFactor: true,
         twoFactorToken: 'mock-2fa-token'
-      } as any)
+      } as MockAuthStore)
     })
 
     it('should render 2FA form when required', () => {
@@ -242,7 +242,7 @@ describe('LoginForm', () => {
         requiresTwoFactor: true,
         twoFactorToken: 'mock-2fa-token',
         isLoading: true
-      } as any)
+      } as MockAuthStore)
 
       render(<LoginForm />)
 
@@ -257,7 +257,7 @@ describe('LoginForm', () => {
         requiresTwoFactor: true,
         twoFactorToken: 'mock-2fa-token',
         error: { message: errorMessage }
-      } as any)
+      } as MockAuthStore)
 
       render(<LoginForm />)
 
@@ -268,7 +268,7 @@ describe('LoginForm', () => {
       const mockSetState = jest.fn()
       
       // Mock useAuthStore.setState
-      ;(useAuthStore as any).setState = mockSetState
+      ;(useAuthStore as { setState: jest.Mock }).setState = mockSetState
 
       const user = userEvent.setup()
       render(<LoginForm />)

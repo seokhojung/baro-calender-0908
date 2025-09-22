@@ -279,7 +279,7 @@ export class RecurrenceEngine {
   private static extractKoreanComponents(rule: RecurrenceRule) {
     const { frequency, interval, byWeekDay, until, count } = rule
     
-    let frequencyText = FREQUENCY_KOREAN_MAP[frequency]
+    const frequencyText = FREQUENCY_KOREAN_MAP[frequency]
     let intervalText = ''
     let weekdaysText = ''
     let endingText = ''

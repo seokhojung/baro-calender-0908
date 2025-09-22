@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 프로젝트 개요
 
-바로캘린더는 팀과 개인의 프로젝트 일정 관리를 위한 풀스택 웹 애플리케이션입니다. 백엔드(Epic 1)는 Node.js/Fastify/PostgreSQL을 사용하여 100% 완성되었고, 프론트엔드(Epic 2)는 Next.js 14.2.13으로 33% 완성되었으며 현재 ShadCN UI를 사용한 새로운 UI/UX 디자인 시스템을 구현 중입니다.
+바로캘린더는 팀과 개인의 프로젝트 일정 관리를 위한 풀스택 웹 애플리케이션입니다. 백엔드(Epic 1)는 Node.js/Fastify/PostgreSQL을 사용하여 100% 완성되었고, 프론트엔드(Epic 2)는 Next.js 14.2.13으로 Stories 1.1-1.10이 완료되어 현재 Story 2.x 시리즈 구현 단계입니다. ShadCN UI 기반의 완전한 디자인 시스템과 반응형 접근성 기능이 구축되었습니다.
 
 ## 기술 스택
 
@@ -52,8 +52,11 @@ npm run lint:fix       # 린트 이슈 자동 수정
 
 # 프론트엔드 (client/ 디렉토리에서)
 cd client && npm test  # 프론트엔드 테스트 실행
+cd client && npm run test:coverage    # 커버리지 포함 테스트
+cd client && npm run test:performance # 성능 테스트
 cd client && npm run lint  # 프론트엔드 코드 린트
 cd client && npm run type-check  # TypeScript 타입 체크
+cd client && npm run benchmark     # 성능 벤치마크
 ```
 
 ### 빌드 & 프로덕션
@@ -113,12 +116,18 @@ notifications (id, user_id, event_id, type, message, read_at)
 
 ## 현재 개발 중점 사항
 
-**Story 2.2: 사용자 경험 및 성능 최적화**
-- ShadCN UI 컴포넌트로 새로운 UI/UX 디자인 구현
-- 고급 필터링 시스템 구축 (프로젝트/담당자/태그 필터)
-- 일정 및 프로젝트 검색 기능 추가
-- 성능 최적화 (가상 스크롤링, 지연 로딩)
-- 모바일 터치 인터페이스 최적화
+**Stories 1.1-1.10 완료 상태:**
+- ✅ 프로젝트 초기화 및 기본 설정 (100%)
+- ✅ TypeScript 엄격 모드 및 ESLint 정리 (0개 오류)
+- ✅ ShadCN UI 디자인 시스템 구축 (8색상 팔레트)
+- ✅ React 성능 최적화 (memo/useMemo/useCallback)
+- ✅ 반응형 및 접근성 기능 구현
+- ✅ 문서 자동화 시스템 (daily-sync-checker.js)
+
+**다음 우선순위 (Stories 2.x):**
+- **Story 2.1**: 이벤트 생성 및 관리 시스템 (P0 Critical)
+- **Story 2.5**: 테스팅 전략 구현 (P1 High)
+- **Story 2.9**: REST API 연동 (핵심 백엔드 통합)
 
 ## 중요한 아키텍처 패턴
 
@@ -198,3 +207,50 @@ requireEditorOrHigher()    // 편집자 이상 권한
 - `.env` (from `env.example`) - 환경 설정
 - `docker-compose.yml` - 프로덕션 Docker 설정
 - `docker-compose.dev.yml` - 개발용 Docker 설정
+
+## 개발 환경 전용 페이지
+
+### 데모 페이지 시스템
+프로젝트에는 개발 환경에서만 접근 가능한 데모 페이지들이 있습니다:
+
+- `/demo` - ShadCN UI 디자인 시스템 쇼케이스
+- `/responsive-demo` - 반응형/접근성 테스트 도구
+- `/layout-demo` - 레이아웃 컴포넌트 테스트
+
+**접근 제한**: `client/src/middleware.ts`에서 프로덕션 환경에서 자동 차단
+**문서**: `client/DEMO_PAGES.md` 참조
+
+## 자동화 시스템
+
+### 문서 동기화 도구
+```bash
+# 일일 문서 동기화 실행
+node docs/implementation-verification/automation-tools/daily-sync-checker.js
+
+# 빠른 모드 (기본 체크만)
+node docs/implementation-verification/automation-tools/daily-sync-checker.js --quick
+```
+
+### 개발 워크플로우
+1. **Tier 1**: Emergency Fixes (긴급 수정)
+2. **Tier 2**: Core Implementation (핵심 구현)
+3. **Tier 3**: Quality Enhancement (품질 향상) ← 현재 완료
+4. **Stories 2.x**: Feature Implementation (기능 구현) ← 다음 단계
+
+## 품질 기준
+
+### TypeScript
+- 엄격 모드 활성화 (`strict: true`)
+- 현재 컴파일 오류: **0개 유지**
+- `noUncheckedIndexedAccess: true`
+
+### 성능 요구사항
+- LCP < 2.5초
+- FID < 100ms
+- CLS < 0.1
+- 번들 크기 < 500KB (gzipped)
+
+### 테스트 커버리지
+- 목표: 90% 이상
+- E2E 테스트 통과율: 100%
+- 접근성 위반: 0개

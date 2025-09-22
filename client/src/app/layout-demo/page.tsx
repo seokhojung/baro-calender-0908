@@ -5,11 +5,26 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { CalendarBlock } from "@/components/layout/calendar-block";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export default function LayoutDemoPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6">
+        {/* Development Environment Warning */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-8">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200">
+                개발 환경 전용
+              </Badge>
+              <span className="text-sm text-amber-700 dark:text-amber-300">
+                레이아웃 컴포넌트 테스트 페이지
+              </span>
+            </div>
+          </div>
+        )}
+
         <div className="text-center space-y-4 mb-8">
           <h1 className="text-4xl font-bold text-project-purple-600 dark:text-project-purple-400">
             Layout Blocks Demo

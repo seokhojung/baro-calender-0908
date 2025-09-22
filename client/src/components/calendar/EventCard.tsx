@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, memo, useMemo } from 'react';
 import { useDrag } from 'react-dnd';
-import { Clock, MapPin, Users, MoreHorizontal, GripVertical, Edit2, Trash2 } from 'lucide-react';
+import { Clock, MapPin, Users, MoreHorizontal, Edit2, Trash2 } from 'lucide-react';
 import { Event } from '@/types/store';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,7 @@ export interface DragItem {
   event: Event;
 }
 
-const EventCard: React.FC<EventCardProps> = ({
+const EventCard: React.FC<EventCardProps> = memo(function EventCard({
   event,
   projectColor,
   projectName,
@@ -53,9 +53,9 @@ const EventCard: React.FC<EventCardProps> = ({
   isMobile = false,
   touchOptimized = false,
   enableAccessibility = true
-}) => {
+}: EventCardProps) {
   const [isResizing, setIsResizing] = useState(false);
-  const [resizeDirection, setResizeDirection] = useState<'top' | 'bottom' | null>(null);
+  const [, setResizeDirection] = useState<'top' | 'bottom' | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -121,7 +121,7 @@ const EventCard: React.FC<EventCardProps> = ({
       
       // If it's a tap (not a drag)
       if (deltaX < 10 && deltaY < 10) {
-        handleClick(e as any);
+        handleClick(e as unknown as React.MouseEvent);
       }
     }
     
@@ -228,17 +228,26 @@ const EventCard: React.FC<EventCardProps> = ({
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  const colorStyle = projectColor || event.color;
-  const startTime = format(new Date(event.startDate), 'HH:mm');
-  const endTime = format(new Date(event.endDate), 'HH:mm');
-  const timeRange = `${startTime} - ${endTime}`;
+  const colorStyle = useMemo(() => projectColor || event.color, [projectColor, event.color]);
+  const { startTime, endTime, timeRange } = useMemo(() => {
+    const start = format(new Date(event.startDate), 'HH:mm');
+    const end = format(new Date(event.endDate), 'HH:mm');
+    return {
+      startTime: start,
+      endTime: end,
+      timeRange: `${start} - ${end}`
+    };
+  }, [event.startDate, event.endDate]);
 
   // Generate ARIA label for accessibility
-  const eventAriaLabel = enableAccessibility ? generateAriaLabel('event', {
-    event,
-    startTime: showTime ? startTime : undefined,
-    endTime: showTime ? endTime : undefined
-  }) : undefined;
+  const eventAriaLabel = useMemo(() => {
+    if (!enableAccessibility) return undefined;
+    return generateAriaLabel('event', {
+      event,
+      startTime: showTime ? startTime : undefined,
+      endTime: showTime ? endTime : undefined
+    });
+  }, [enableAccessibility, generateAriaLabel, event, showTime, startTime, endTime]);
 
   // Cleanup timers on unmount
   useEffect(() => {
@@ -283,7 +292,7 @@ const EventCard: React.FC<EventCardProps> = ({
         role="button"
         tabIndex={isSelected ? 0 : -1}
         aria-label={eventAriaLabel}
-        aria-selected={isSelected}
+        aria-describedby={isSelected ? `event-${event.id}-description` : undefined}
         aria-pressed={showActions}
       >
         {/* Top resize handle for time-based events */}
@@ -390,7 +399,7 @@ const EventCard: React.FC<EventCardProps> = ({
       role="button"
       tabIndex={isSelected ? 0 : -1}
       aria-label={eventAriaLabel}
-      aria-selected={isSelected}
+      aria-describedby={isSelected ? `event-${event.id}-details` : undefined}
       aria-pressed={showActions}
     >
       {/* Top resize handle for time-based events */}
@@ -508,6 +517,8 @@ const EventCard: React.FC<EventCardProps> = ({
       )}
     </Card>
   );
-};
+});
+
+EventCard.displayName = 'EventCard';
 
 export default EventCard;

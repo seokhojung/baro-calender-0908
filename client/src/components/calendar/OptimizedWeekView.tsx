@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useMemo, useState, useCallback, useRef } from 'react';
+import React, { memo, useMemo, useCallback } from 'react';
 import { List } from 'react-window';
 import { useDrop } from 'react-dnd';
 import { format, isSameDay, isToday, differenceInMinutes, addMinutes } from 'date-fns';

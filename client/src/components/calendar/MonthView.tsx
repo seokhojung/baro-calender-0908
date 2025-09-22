@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from 'react';
+import React, { memo, useMemo, useState, useCallback } from 'react';
 import { useDrop } from 'react-dnd';
 import { format, isSameMonth, isToday, isSameDay, startOfDay } from 'date-fns';
 import { useCalendar } from '@/components/providers/calendar-provider';
@@ -78,7 +78,7 @@ const DayCell: React.FC<DayProps> = ({
 
   return (
     <div
-      ref={drop as any}
+      ref={drop as unknown as React.Ref<HTMLDivElement>}
       className={cn(
         "relative min-h-[120px] p-2 border-r border-b border-border/50 transition-colors",
         "hover:bg-muted/30 cursor-pointer",
@@ -148,14 +148,14 @@ const DayCell: React.FC<DayProps> = ({
   );
 };
 
-const MonthView: React.FC<MonthViewProps> = ({
+const MonthView: React.FC<MonthViewProps> = memo(function MonthView({
   className,
   onEventEdit,
   onEventDelete,
   onEventCreate,
   onEventSelect
-}) => {
-  const { store, selectors, dateUtils, isReady } = useCalendar();
+}: MonthViewProps) {
+  const { store, dateUtils, isReady } = useCalendar();
   const projectStore = useProjectStore();
 
   // Get month grid days
@@ -204,11 +204,11 @@ const MonthView: React.FC<MonthViewProps> = ({
     return grouped;
   }, [store.events, projectStore.selectedProjectIds]);
 
-  const handleDayClick = (date: Date) => {
+  const handleDayClick = useCallback((date: Date) => {
     store.setSelectedDate(date);
-  };
+  }, [store]);
 
-  const handleEventMove = async (eventId: string, newDate: Date) => {
+  const handleEventMove = useCallback(async (eventId: string, newDate: Date) => {
     try {
       const event = store.events.find(e => e.id === eventId);
       if (!event) return;
@@ -232,7 +232,7 @@ const MonthView: React.FC<MonthViewProps> = ({
     } catch (error) {
       console.error('Failed to move event:', error);
     }
-  };
+  }, [store]);
 
   if (!isReady) {
     return (
@@ -287,6 +287,8 @@ const MonthView: React.FC<MonthViewProps> = ({
       </div>
     </div>
   );
-};
+});
+
+MonthView.displayName = 'MonthView';
 
 export default MonthView;

@@ -4,23 +4,22 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { TouchBackend } from 'react-dnd-touch-backend'
-import { format, startOfWeek, endOfWeek, addDays, isSameDay } from 'date-fns'
-import { Plus, Calendar, Settings, Filter } from 'lucide-react'
+import { format, startOfWeek, addDays, isSameDay } from 'date-fns'
+import { Plus, Filter } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 import { DraggableSchedule } from './DraggableSchedule'
-import { TimeSlotDropZone, BusinessHoursGrid } from './TimeSlotDropZone'
+import { TimeSlotDropZone } from './TimeSlotDropZone'
 import { ScheduleCreateForm } from './ScheduleCreateForm'
-import { ConflictResolutionDialog, DragConflictDialog } from './ConflictResolutionDialog'
+import { DragConflictDialog } from './ConflictResolutionDialog'
 
-import { 
-  Schedule, 
-  CreateScheduleInput,
-  PROJECT_COLORS 
+import {
+  Schedule,
+  CreateScheduleInput
 } from '@/types/schedule'
 import { useScheduleStore, useScheduleStoreSelectors } from '@/stores/scheduleStore'
 
@@ -169,24 +168,6 @@ export const CalendarContainer: React.FC = () => {
     }
   }, [scheduleStore])
 
-  // Handle time slot click for creating new schedule
-  const handleTimeSlotClick = useCallback((date: Date, time: string) => {
-    const timeParts = time.split(':').map(Number)
-    const hours = timeParts[0] ?? 0
-    const minutes = timeParts[1] ?? 0
-    
-    const startDateTime = new Date(date)
-    startDateTime.setHours(hours, minutes, 0, 0)
-    
-    const endDateTime = new Date(startDateTime)
-    endDateTime.setHours(hours + 1, minutes, 0, 0) // Default 1 hour duration
-
-    setCreateFormInitialData({
-      startDateTime: startDateTime.toISOString(),
-      endDateTime: endDateTime.toISOString()
-    })
-    setIsCreateFormOpen(true)
-  }, [])
 
   // DnD Backend selection based on device
   const dndBackend = isTouchDevice() ? TouchBackend : HTML5Backend
@@ -261,7 +242,7 @@ export const CalendarContainer: React.FC = () => {
               <div className="p-2 text-sm font-medium text-center border-r">
                 시간
               </div>
-              {weekDays.map((day, index) => (
+              {weekDays.map((day) => (
                 <div 
                   key={day.toISOString()}
                   className={`p-2 text-sm text-center border-r ${
@@ -324,7 +305,7 @@ export const CalendarContainer: React.FC = () => {
 
                   {/* Schedules for this day */}
                   <div className="schedules absolute inset-0 pointer-events-none">
-                    {schedulesByDate[format(day, 'yyyy-MM-dd')]?.map((schedule, index) => {
+                    {schedulesByDate[format(day, 'yyyy-MM-dd')]?.map((schedule) => {
                       const startHour = new Date(schedule.startDateTime).getHours()
                       const startMinute = new Date(schedule.startDateTime).getMinutes()
                       const topOffset = ((startHour - 9) * 48) + (startMinute / 60 * 48)

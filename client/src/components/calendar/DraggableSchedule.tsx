@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useCallback } from 'react'
-import { useDrag } from 'react-dnd'
+import { useDrag, DragSourceMonitor } from 'react-dnd'
 import { format, parseISO } from 'date-fns'
 import { MoreHorizontal, Users, MapPin, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -17,9 +17,10 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
-import { 
-  DraggableScheduleProps, 
-  PROJECT_COLORS 
+import {
+  Schedule,
+  DraggableScheduleProps,
+  PROJECT_COLORS
 } from '@/types/schedule'
 import { useScheduleStore } from '@/stores/scheduleStore'
 
@@ -37,14 +38,14 @@ export const DraggableSchedule: React.FC<DraggableScheduleProps> = ({
     begin: () => {
       startDrag(schedule)
     },
-    end: (item: any, monitor: any) => {
+    end: (item: unknown, monitor: DragSourceMonitor) => {
       if (monitor.didDrop()) {
         commitDrag()
       } else {
         cancelDrag()
       }
     },
-    collect: (monitor: any) => ({
+    collect: (monitor: DragSourceMonitor) => ({
       isDragging: monitor.isDragging(),
     }),
   }), [schedule, timeSlot, startDrag, commitDrag, cancelDrag])
@@ -95,7 +96,7 @@ export const DraggableSchedule: React.FC<DraggableScheduleProps> = ({
 
   return (
     <div
-      ref={drag as any}
+      ref={drag as unknown as React.Ref<HTMLDivElement>}
       className={cn(
         "schedule-item relative cursor-move border-l-4 p-2 rounded-r transition-all",
         "hover:shadow-md focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-primary",
@@ -215,8 +216,8 @@ export const DraggableSchedule: React.FC<DraggableScheduleProps> = ({
 
 // Schedule Actions Component
 const ScheduleActions: React.FC<{
-  schedule: any
-  onEdit: (schedule: any) => void
+  schedule: Schedule
+  onEdit: (schedule: Schedule) => void
   onDelete: (scheduleId: string) => void
 }> = ({ schedule, onEdit, onDelete }) => {
   return (

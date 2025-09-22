@@ -225,7 +225,7 @@ export class ConflictResolver {
    * Apply operational transforms to data
    */
   public applyTransforms(data: any, transforms: OperationalTransform[]): any {
-    let result = JSON.parse(JSON.stringify(data)); // Deep clone
+    const result = JSON.parse(JSON.stringify(data)); // Deep clone
     
     for (const transform of transforms) {
       switch (transform.operation) {
