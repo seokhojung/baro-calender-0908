@@ -204,10 +204,13 @@ class IntegratedSyncMonitor {
     // 2. 체크리스트 자동 업데이트
     await this.updatePhaseChecklist(phaseNum, phaseStatus);
 
-    // 3. Phase 완료 보고서 생성
+    // 3. 워크플로우 가이드 자동 업데이트
+    await this.updateWorkflowGuide(phaseNum, phaseStatus);
+
+    // 4. Phase 완료 보고서 생성
     await this.generatePhaseCompletionReport(phaseNum, phaseStatus);
 
-    // 4. Phase 아티팩트 생성
+    // 5. Phase 아티팩트 생성
     await this.createPhaseArtifacts(phaseNum, phaseStatus);
 
     console.log(`✅ Phase ${phaseNum} 완료 처리 완료`);
@@ -752,6 +755,106 @@ ${this.refactoringQuality?.quality === 'GOOD' ?
     this.ensureDirectory(path.dirname(reportPath));
     fs.writeFileSync(reportPath, reportContent, 'utf8');
     console.log(`📄 Tier 리포트 생성: ${reportPath}`);
+  }
+
+  // 워크플로우 가이드 자동 업데이트
+  async updateWorkflowGuide(phaseNum, phaseStatus) {
+    const guidePath = 'docs/implementation-verification-2x/COMPREHENSIVE-WORKFLOW-GUIDE.md';
+
+    try {
+      if (!fs.existsSync(guidePath)) {
+        console.log(`   ⚠️  워크플로우 가이드 파일 없음: ${guidePath}`);
+        return;
+      }
+
+      let content = fs.readFileSync(guidePath, 'utf8');
+      console.log(`📖 워크플로우 가이드 자동 업데이트 중...`);
+
+      // Phase 완료 시 현재 상태 업데이트
+      if (phaseStatus.completionRate >= 100) {
+        // 시스템 상태 업데이트
+        content = content.replace(
+          /\*\*📊 시스템 상태\*\*: ([^,\n]+)/,
+          `**📊 시스템 상태**: Phase ${phaseNum} 완료, 대화형 동기화 시스템 가동 중`
+        );
+
+        // 다음 마일스톤 업데이트
+        const nextPhase = parseInt(phaseNum) + 1;
+        const nextPhaseName = nextPhase <= 4 ?
+          this.phases[nextPhase]?.name || `Phase ${nextPhase}` :
+          'All Phases Complete';
+
+        content = content.replace(
+          /\*\*🎯 다음 마일스톤\*\*: ([^\n]+)/,
+          `**🎯 다음 마일스톤**: ${nextPhase <= 4 ? `Phase ${nextPhase} ${nextPhaseName} 시작` : 'All Phases Complete 🎉'}`
+        );
+
+        // 마지막 업데이트 일시 갱신
+        content = content.replace(
+          /\*\*📅 가이드 최종 업데이트\*\*: ([^\n]+)/,
+          `**📅 가이드 최종 업데이트**: ${new Date().toLocaleDateString('ko-KR')}`
+        );
+
+        // Phase 진행률 정보 추가/업데이트
+        const phaseProgressSection = this.generatePhaseProgressSection();
+
+        // 기존 Phase 진행률 섹션이 있으면 교체, 없으면 추가
+        if (content.includes('## 📊 **Phase 진행률 현황**')) {
+          content = content.replace(
+            /## 📊 \*\*Phase 진행률 현황\*\*[\s\S]*?(?=##|---)/,
+            phaseProgressSection + '\n\n'
+          );
+        } else {
+          // 자동 문서 동기화 시스템 가이드 섹션 전에 추가
+          const insertPosition = content.indexOf('## 🔄 **자동 문서 동기화 시스템 가이드**');
+          if (insertPosition !== -1) {
+            content = content.substring(0, insertPosition) +
+                     phaseProgressSection + '\n\n' +
+                     content.substring(insertPosition);
+          }
+        }
+
+        fs.writeFileSync(guidePath, content, 'utf8');
+        console.log(`   ✅ 워크플로우 가이드 자동 업데이트 완료`);
+      }
+
+    } catch (error) {
+      console.error(`   ❌ 워크플로우 가이드 업데이트 실패:`, error.message);
+    }
+  }
+
+  // Phase 진행률 섹션 생성
+  generatePhaseProgressSection() {
+    const completedPhases = Object.entries(this.phaseStatuses)
+      .filter(([_, status]) => status.completionRate >= 100);
+
+    const currentPhase = Object.entries(this.phaseStatuses)
+      .find(([_, status]) => status.completionRate > 0 && status.completionRate < 100);
+
+    return `## 📊 **Phase 진행률 현황**
+
+### **완료된 Phase**
+${completedPhases.length > 0 ?
+  completedPhases.map(([num, status]) =>
+    `- ✅ Phase ${num} (${status.name}): 100% 완료`
+  ).join('\n') :
+  '- 완료된 Phase 없음'
+}
+
+### **현재 진행 중인 Phase**
+${currentPhase ?
+  `- 🔄 Phase ${currentPhase[0]} (${currentPhase[1].name}): ${currentPhase[1].completionRate}% 진행 중` :
+  '- 진행 중인 Phase 없음'
+}
+
+### **전체 Progress**
+${Object.entries(this.phaseStatuses).map(([num, status]) =>
+  `- Phase ${num}: ${status.completionRate}% (${status.completedStories}/${status.totalStories} Stories)`
+).join('\n')}
+
+**자동 업데이트**: ${new Date().toLocaleDateString('ko-KR')} ${new Date().toLocaleTimeString('ko-KR')}
+
+---`;
   }
 }
 
