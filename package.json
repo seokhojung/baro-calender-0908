@@ -65,7 +65,13 @@
     "docker:logs": "docker-compose logs -f",
     "prepare": "husky install || true",
     "pre-commit": "npm run lint && npm run test:contracts",
-    "validate:api": "node scripts/validate-api-contracts.js"
+    "validate:api": "node scripts/validate-api-contracts.js",
+    "sync:check": "node docs/implementation-verification-2x/automation-tools-2x/integrated-sync-monitor.js",
+    "sync:quick": "node docs/implementation-verification-2x/automation-tools-2x/integrated-sync-monitor.js --quick",
+    "sync:phase": "node docs/implementation-verification-2x/automation-tools-2x/integrated-sync-monitor.js --phase",
+    "sync:tier": "node docs/implementation-verification-2x/automation-tools-2x/integrated-sync-monitor.js --tier",
+    "sync:setup-hooks": "node docs/implementation-verification-2x/automation-tools-2x/setup-git-hooks.js",
+    "sync:remove-hooks": "node docs/implementation-verification-2x/automation-tools-2x/setup-git-hooks.js --remove"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
